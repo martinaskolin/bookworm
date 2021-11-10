@@ -1,3 +1,7 @@
+<?php
+  include_once 'includes/dbh.inc.php'
+ ?>
+
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
   <head>
@@ -7,6 +11,20 @@
   </head>
   <body>
     <h1>hello world!</h1>
-    <img src="resources/images/9781631490330.jpg" alt="Crime and Punishment">
+    <?php
+      $sql = "SELECT * FROM users";
+      $result = mysqli_query($conn, $sql);
+      $resultCheck = mysqli_num_rows($result);
+
+      if ($resultCheck > 0) {
+        while ($row = mysqli_fetch_assoc($result)){
+          foreach ($row as $col) {
+            echo $col, " ";
+          }
+          echo "<br>";
+        }
+      }
+    ?>
+    <!--<img src="resources/images/9781631490330.jpg" alt="Crime and Punishment">!-->
   </body>
 </html>
