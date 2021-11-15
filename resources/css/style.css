@@ -1,3 +1,17 @@
 body {
-  color: black;
+  font-family: arial;
+  margin: 0;
+  color: white;
+  background-color: #2B2B2B;
+}
+
+.header {
+  padding: 20px;
+  text-align: center;
+  background-color: #1ABC9C;
+  color: white;
+}
+
+.signup-form{
+  align-items: center;
 }
