@@ -18,8 +18,8 @@
     return $result;
   }
 
-  function fetch_user($conn, $email) {
-    $sql = "SELECT * FROM users WHERE email = ?;";
+  function fetch_user($conn, $uid, $email) {
+    $sql = "SELECT * FROM users WHERE uid = ? OR email = ?;";
     $stmt = mysqli_stmt_init($conn);
 
     if (!mysqli_stmt_prepare($stmt, $sql)) {
@@ -27,7 +27,7 @@
       exit();
     }
 
-    mysqli_stmt_bind_param($stmt, "s", $email);
+    mysqli_stmt_bind_param($stmt, "ss", $uid, $email);
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
     mysqli_stmt_close($stmt);
@@ -54,7 +54,7 @@
   }
 
   function loginUser($conn, $email, $pwd) {
-    $userArr = fetch_user($conn, $email);
+    $userArr = fetch_user($conn, null ,$email);
 
     if ($userArr == false) {
       header("location: ../pages/login?error=WRONG_LOGIN");
