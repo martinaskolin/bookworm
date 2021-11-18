@@ -19,7 +19,7 @@
   }
 
   function fetch_user($conn, $uid, $email) {
-    $sql = "SELECT * FROM users WHERE uid = ? OR email = ?;";
+    $sql = "SELECT * FROM user WHERE id = ? OR email = ?;";
     $stmt = mysqli_stmt_init($conn);
 
     if (!mysqli_stmt_prepare($stmt, $sql)) {
@@ -37,7 +37,7 @@
   }
 
   function createUser($conn, $fname, $lname, $email, $pwd) {
-    $sql = "INSERT INTO users (fname, lname, email, pwd_sha256, pwd_salt) VALUES (?, ?, ?, ?, ?);";
+    $sql = "INSERT INTO user (fname, lname, email, pwd_sha256, pwd_salt) VALUES (?, ?, ?, ?, ?);";
     $stmt = mysqli_stmt_init($conn);
 
     if (!mysqli_stmt_prepare($stmt, $sql)) {
@@ -70,7 +70,7 @@
     }
     else {
       session_start();
-      $_SESSION["uid"] = $userArr["uid"];
+      $_SESSION["uid"] = $userArr["id"];
       header("location: ../index.php");
       exit();
     }
