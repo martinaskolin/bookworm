@@ -42,16 +42,20 @@
         $sql = "SELECT * FROM product_add pa inner join product p on pa.pid = p.id WHERE p.id = '" . $product['id'] . "'"; // change to more time efficient solution
         $result_add = $conn->query($sql);
 
-        if ($result->num_rows == 1) {
+        echo "<div>";
+        // Fetch additional information
+        if ($result_add->num_rows == 1) {
           $product_add = $result_add->fetch_assoc();
-          echo "<div>";
           echo "<img src='" . $product_add['img_dir'] . "'>";
-          echo "<p>" . $product['name'] . "</p>";
-          echo "<a href=''> " . $product['price'] . " <i class='bi-bag-fill'></i> </a>";
-          echo "</div>";
         }
+        else { echo "<img src='/bookworm/resources/images/img_missing.jpg'>"; }
+
+        echo "<p>" . $product['name'] . "</p>";
+        echo "<a href=''> " . $product['price'] . " <i class='bi-bag-fill'></i> </a>";
+        echo "</div>";
       }
     }
+  else { echo "No match could be found"; }
   }
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
