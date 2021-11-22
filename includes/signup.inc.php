@@ -17,8 +17,8 @@
   require_once "functions.inc.php";
 
   // Error checks
-  if (empty_input($fname, $lname, $email, $pwd) !== false) { header("location: ../pages/signup?error=EMPTY_INPUT"); exit(); }
-  if (invalid_email($email) !== false) { header("location: ../pages/signup?error=INVALID_EMAIL"); exit(); }
+  if (checkEmpty(array($fname, $lname, $email, $pwd)) !== false) { header("location: ../pages/signup?error=EMPTY_INPUT"); exit(); }
+  if (checkEmail($email) !== false) { header("location: ../pages/signup?error=INVALID_EMAIL"); exit(); }
 
   createUser($conn, $fname, $lname, $email, $pwd);
 

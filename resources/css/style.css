@@ -12,6 +12,34 @@ body {
   color: white;
 }
 
-.signup-form{
+.signup-form {
   align-items: center;
+}
+
+.product-container {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-column-gap: 10px;
+  grid-row-gap: 10px;
+  padding: 10px;
+}
+
+.product-container div{
+  /*border-radius: 25px;
+  background-color: red;*/
+  padding: 10px;
+  text-align: center;
+}
+
+.product-container img {
+  width: 7vw;
+}
+
+.product-container a {
+  text-decoration: none;
+  color: white;
+  background-color: red;
+  display: block;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }

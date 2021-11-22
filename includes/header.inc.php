@@ -1,6 +1,6 @@
 <?php
   session_start();
-  include_once 'dbh.inc.php';
+  include_once $_SERVER['DOCUMENT_ROOT'] . '/bookworm/includes/dbh.inc.php';
  ?>
 
  <!DOCTYPE html>
@@ -9,6 +9,7 @@
      <meta charset="utf-8">
      <meta name="viewport" content="width=device-width, initial-scale=1">
      <link rel="stylesheet" href="/bookworm/resources/css/style.css">
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.1/font/bootstrap-icons.css">
      <title></title>
    </head>
    <body>
@@ -18,7 +19,7 @@
        <li> <a href='/bookworm/'>Browse</a> </li>
        <?php
          if (isset($_SESSION["uid"])) {
-           include_once 'functions.inc.php';
+           include_once $_SERVER['DOCUMENT_ROOT'] . '/bookworm/includes/functions.inc.php';
            $userArr = fetch_user($conn, $_SESSION["uid"], null);
 
            echo "<li> <a href='/bookworm/includes/logout.inc.php'>Log Out</a> </li>";
