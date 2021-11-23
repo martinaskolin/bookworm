@@ -26,14 +26,12 @@ body {
   margin: 2em;
   font-size: .9em;
   font-weight: normal;
+  padding-bottom: 3px;
+  border-bottom: 1px solid transparent;
 }
 
-.grow {
-transition: all .2s ease-in-out;
-}
-
-.grow:hover {
-transform: scale(1.1);
+.header li a:hover {
+  border-bottom: 1px solid white;
 }
 
 .signup-form {
