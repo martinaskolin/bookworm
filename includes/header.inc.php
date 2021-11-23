@@ -15,22 +15,22 @@
    <body>
 
      <div class="header">
-       <h2>Bookworm</h2>
-       <li> <a href='/bookworm/'>Browse</a> </li>
+       Bookworm
        <?php
          if (isset($_SESSION["uid"])) {
            include_once $_SERVER['DOCUMENT_ROOT'] . '/bookworm/includes/functions.inc.php';
            $userArr = fetch_user($conn, $_SESSION["uid"], null);
 
-           echo "<li> <a href='/bookworm/includes/logout.inc.php'>Log Out</a> </li>";
-           echo "<li> <a href='/bookworm/pages/profile'>" . $userArr['fname'] . " " . $userArr['lname'] . "</a> </li>";
-           echo "<li> <a href='/bookworm/pages/cart/index.php'>Cart</a> </li>";
+           echo "<li class='grow'> <a href='/bookworm/includes/logout.inc.php'>Log Out <i class='bi-box-arrow-left'></i></a> </li>";
+           echo "<li class='grow'> <a href='/bookworm/pages/cart/index.php'>Cart <i class='bi-bag-fill'></i></a> </li>";
+           echo "<li class='grow'> <a href='/bookworm/pages/profile'>" . $userArr['fname'] . " " . $userArr['lname'] . " <i class='bi-person-circle'></i></a> </li>";
          }
          else {
-           echo "<li> <a href='/bookworm/pages/login'>Log In</a> </li>";
-           echo "<li> <a href='/bookworm/pages/signup'>Sign Up</a> </li>";
+           echo "<li class='grow'> <a href='/bookworm/pages/signup'>Sign Up <i class='bi-pencil-square'></i> </a> </li>";
+           echo "<li class='grow'> <a href='/bookworm/pages/login'>Log In <i class='bi-person-fill'></i></a> </li>";
          }
         ?>
+        <li class='grow'> <a href='/bookworm/'>Browse <i class='bi-book'></i></a> </li>
      </div>
 
   </body>
