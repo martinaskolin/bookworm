@@ -19,7 +19,7 @@
   }
 
   function fetch_user($conn, $uid, $email) {
-    $sql = "SELECT * FROM users WHERE uid = ? OR email = ?;";
+    $sql = "SELECT * FROM user WHERE id = ? OR email = ?;";
     $stmt = mysqli_stmt_init($conn);
 
     if (!mysqli_stmt_prepare($stmt, $sql)) {
@@ -37,7 +37,7 @@
   }
 
   function createUser($conn, $fname, $lname, $email, $pwd) {
-    $sql = "INSERT INTO users (fname, lname, email, pwd_sha256, pwd_salt) VALUES (?, ?, ?, ?, ?);";
+    $sql = "INSERT INTO user (fname, lname, email, pwd_sha256, pwd_salt) VALUES (?, ?, ?, ?, ?);";
     $stmt = mysqli_stmt_init($conn);
 
     if (!mysqli_stmt_prepare($stmt, $sql)) {
@@ -54,7 +54,7 @@
   }
 
   function loginUser($conn, $email, $pwd) {
-    $userArr = fetch_user($conn, null ,$email);
+    $userArr = fetch_user($conn, NULL, $email);
 
     if ($userArr == false) {
       header("location: ../pages/login?error=WRONG_LOGIN");
@@ -70,10 +70,28 @@
     }
     else {
       session_start();
-      $_SESSION["uid"] = $userArr["uid"];
-      header("location: ../index.php");
+      $_SESSION["id"] = $userArr["id"];
+      header("location: /bookworm/index.php");
+      $cookie_name = "cookie_loggedIn";
+      $cookie_value = $email;
+      setcookie($cookie_name, $cookie_value, 0);
       exit();
     }
   }
+
+/*  function getProductsInCart($conn){
+    //not sure if it works - dont have testing options avaliable
+    $user = fetch_user($conn, $_COOKIE["cookie_loggedIn"]);
+    $sql = "SELECT * FROM cart WHERE email = $user";
+    $result = mysqli_query($conn, $sql);
+
+    if (mysqli_num_rows($result) > 0) {
+      $row = fetch_assoc($result);
+      return $row;
+    }
+    else {
+      return NULL;
+    }
+  }*/
 
  ?>
