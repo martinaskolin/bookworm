@@ -19,10 +19,8 @@
   require_once "functions.inc.php";
 
   // Error checks
-  //if (empty_input($newFname, $newLname, $newEmail, $newPwd) !== false) { header("location: ../pages/profile?error=EMPTY_INPUT"); exit(); }
-  //if (empty_input($oldPwd) !== false) { header("location: ../pages/profile?error=MISSING_OLD_PASSWORD"); exit(); }
   if ($newEmail != null){
-    if (invalid_email($newEmail) !== false) { header("location: ../pages/profile?error=INVALID_EMAIL"); exit(); }
+    if (checkEmail($newEmail) !== false) { header("location: ../pages/profile?error=INVALID_EMAIL"); exit(); }
   }
 
   editUser($conn, $newFname, $newLname, $newEmail, $newPwd, $oldPwd, $_SESSION["uid"]);
