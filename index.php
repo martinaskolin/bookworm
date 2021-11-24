@@ -7,13 +7,17 @@
   </head>
   <body>
 
-    <?php include_once 'includes/header.inc.php'; ?>
+    <?php include_once $_SERVER['DOCUMENT_ROOT'] . '/bookworm/includes/functions.inc.php'; ?>
+    <?php include_once $_SERVER['DOCUMENT_ROOT'] . '/bookworm/includes/header.inc.php'; ?>
 
-    <div class="content">
-      <h1>Content</h1>
-      <p>Some content blablabla, some content blablabla.</p>
-      <p>Some content blablabla, some content blablabla.</p>
-      <p>Some content blablabla, some content blablabla.</p>
+    <!-- ~~~~~~~~~~~~~~~ Search Container ~~~~~~~~~~~~~~~ -->
+    <!--<div class="">
+      <input type="text" name="search" placeholder="Search...">
+    </div>-->
+
+    <!-- ~~~~~~~~~~~~~~~ Product Container ~~~~~~~~~~~~~~~ -->
+    <div class="product-container">
+      <?php displayProducts($conn); ?>
     </div>
 
     <div class = "products">

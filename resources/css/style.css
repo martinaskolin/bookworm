@@ -10,8 +10,58 @@ body {
   text-align: left;
   background-color: #1ABC9C;
   color: white;
+  font-size: 1.2em;
+  font-weight: bold;
 }
 
-.signup-form{
+.header li {
+  list-style: none;
+  float: right;
+  text-align: center;
+}
+
+.header li a {
+  color: white;
+  text-decoration: none;
+  margin: 2em;
+  font-size: .9em;
+  font-weight: normal;
+  padding-bottom: 3px;
+  border-bottom: 1px solid transparent;
+}
+
+.header li a:hover {
+  border-bottom: 1px solid white;
+}
+
+.signup-form {
   align-items: center;
+}
+
+.product-container {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-column-gap: 10px;
+  grid-row-gap: 10px;
+  padding: 10px;
+}
+
+.product-container div{
+  /*border-radius: 25px;
+  background-color: red;*/
+  padding: 10px;
+  text-align: center;
+}
+
+.product-container img {
+  width: 7vw;
+}
+
+.product-container a {
+  text-decoration: none;
+  color: white;
+  background-color: red;
+  display: block;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
