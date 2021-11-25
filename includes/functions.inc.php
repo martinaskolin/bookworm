@@ -69,6 +69,18 @@
   else { echo "No match could be found"; }
   }
 
+  function fetch_cart($conn, $uid) {
+    $sql = "SELECT p.* FROM cart_item ci, product p WHERE ci.user_id = ? AND p.id = ci.pid;";
+    $stmt = mysqli_stmt_init($conn);
+
+    mysqli_stmt_bind_param($stmt, "s", $uid);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    mysqli_stmt_close($stmt);
+
+    return $result;
+  }
+
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // Fetch user: returns all users given uid and/or email
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
