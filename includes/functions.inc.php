@@ -246,13 +246,19 @@
     mysqli_stmt_execute($stmt);
     mysqli_stmt_close($stmt);
 
-    $orderID = mysql_insert_id();
-
     // Add order items
-    $cartArr = fetch_cart($conn, $uid);
+    $result = $conn->query("SELECT LAST_INSERT_ID();");
+    if ($result2 = $result->fetch_assoc()) {
+      $oid = $result2["LAST_INSERT_ID()"];
 
-    foreach ($cartArr as $item) {
-      createOrderItem($conn, $item, $orderID);
+      $cartArr = fetch_cart($conn, $uid);
+
+      while ($item = $cartArr->fetch_assoc()) {
+        echo "While loop";
+        $id = $item["id"];
+        $price = $item["price"];
+        createOrderItem($conn, $oid, $id, $price);
+      }
     }
 
     header("location: /bookworm/pages/checkout_done?status=ORDER_PLACED");
@@ -262,12 +268,12 @@
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // Create Order Item: Create an id for an item in an order
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  function createOrderItem($conn, $item, $orderID) {
+  function createOrderItem($conn, $oid, $id, $price) {
     $sql = "INSERT INTO order_item (pid, oid, price) VALUES (?, ?, ?);";
     $stmt = mysqli_stmt_init($conn);
     mysqli_stmt_prepare($stmt, $sql);
 
-    mysqli_stmt_bind_param($stmt, "iii", $item["id"], $orderID, $item["price"]);
+    mysqli_stmt_bind_param($stmt, "iii", $id, $oid, $price);
     mysqli_stmt_execute($stmt);
     mysqli_stmt_close($stmt);
   }
