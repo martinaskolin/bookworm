@@ -34,7 +34,7 @@
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   function checkForExistingEmail($conn, $email) {
     $emailArr = fetch_emails($conn);
-    if (in_array($email, $emailArr)) {
+    if ($emailArr != null && in_array($email, $emailArr)) {
       return true;
     }
     return false;
