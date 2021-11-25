@@ -65,3 +65,7 @@ body {
   padding-top: 10px;
   padding-bottom: 10px;
 }
+
+.product-container a:hover {
+  background-color: #c40e0e;
+}

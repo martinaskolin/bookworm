@@ -19,6 +19,7 @@
   // Error checks
   if (checkEmpty(array($fname, $lname, $email, $pwd)) !== false) { header("location: ../pages/signup?error=EMPTY_INPUT"); exit(); }
   if (checkEmail($email) !== false) { header("location: ../pages/signup?error=INVALID_EMAIL"); exit(); }
+  if (checkForExistingEmail($conn, $email)) { header("location: ../pages/signup?error=EMAIL_ALREADY_EXISTS"); exit(); }
 
   createUser($conn, $fname, $lname, $email, $pwd);
 

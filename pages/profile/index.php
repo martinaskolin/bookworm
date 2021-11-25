@@ -16,8 +16,8 @@
           if (isset($_SESSION["uid"])) {
             include_once $_SERVER['DOCUMENT_ROOT']. '/bookworm/includes/functions.inc.php';
             $userArr = fetch_user($conn, $_SESSION["uid"], null);
-            echo "<h1> " . $userArr['fname'] . " " . $userArr['lname'] . "</h1>";
-            echo "<p>Email: " . $userArr['email'] . "</p>";
+            echo "<h1><i class='bi-person-circle'></i> " . $userArr['fname'] . " " . $userArr['lname'] . "</h1>";
+            echo "<p><i class='bi bi-envelope-fill'></i> " . $userArr['email'] . "</p>";
           }
         ?>
       </div>
@@ -33,7 +33,6 @@
         </form>
       </section>
     </div>
-
 
   </body>
 </html>
