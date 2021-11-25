@@ -21,6 +21,7 @@
   // Error checks
   if ($newEmail != null){
     if (checkEmail($newEmail) !== false) { header("location: ../pages/profile?error=INVALID_EMAIL"); exit(); }
+    if (checkForExistingEmail($conn, $newEmail)) { header("location: ../pages/profile?error=EMAIL_ALREADY_EXISTS"); exit(); }
   }
 
   editUser($conn, $newFname, $newLname, $newEmail, $newPwd, $oldPwd, $_SESSION["uid"]);

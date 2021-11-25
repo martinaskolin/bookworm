@@ -20,10 +20,21 @@
   }
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  // Check Email: returns true if email is ok
+  // Check Email: returns true if email is valid
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   function checkEmail($email) {
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+      return true;
+    }
+    return false;
+  }
+
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  // Check For Existing Email: returns true if email already is in the table
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  function checkForExistingEmail($conn, $email) {
+    $emailArr = fetch_emails($conn);
+    if (in_array($email, $emailArr)) {
       return true;
     }
     return false;
@@ -76,6 +87,26 @@
     mysqli_stmt_close($stmt);
 
     if ($row = mysqli_fetch_assoc($result)) { return $row;}
+    else { return false; }
+  }
+
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  // Fetch emails: returns all email addresses in the user table
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  function fetch_emails($conn) {
+    $sql = "SELECT email FROM user";
+    $stmt = mysqli_stmt_init($conn);
+
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+      header("location: /bookworm/pages/signup?error=STMT_FAILED");
+      exit();
+    }
+
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    mysqli_stmt_close($stmt);
+
+    if ($col = mysqli_fetch_assoc($result)) { return $col;}
     else { return false; }
   }
 
