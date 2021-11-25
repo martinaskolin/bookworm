@@ -34,7 +34,7 @@
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   function checkForExistingEmail($conn, $email) {
     $emailArr = fetch_emails($conn);
-    if (in_array($email, $emailArr)) {
+    if ($emailArr != null && in_array($email, $emailArr)) {
       return true;
     }
     return false;
@@ -73,10 +73,16 @@
   // Fetch cart: returns all products a user has in their cart
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   function fetch_cart($conn, $uid) {
-    $sql = "SELECT p.*, ci.id FROM cart_item ci, product p WHERE ci.user_id = ? AND p.id = ci.pid;";
+    $sql = "SELECT p.* FROM cart_item ci, product p WHERE ci.uid = ? AND p.id = ci.pid;";
     $stmt = mysqli_stmt_init($conn);
+    mysqli_stmt_prepare($stmt, $sql);
 
-    mysqli_stmt_bind_param($stmt, "s", $uid);
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+      header("location: /bookworm/pages/checkout?error=STMT_FAILED");
+      exit();
+    }
+
+    mysqli_stmt_bind_param($stmt, "i", $uid);
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
     mysqli_stmt_close($stmt);
@@ -226,7 +232,40 @@
   // Place Order: Place an order on one or multiple items
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   function placeOrder($conn, $address, $uid) {
+    // Add order parent
+    $sql = "INSERT INTO order_parent (address, status, uid) VALUES (?, ?, ?);";
+    $stmt = mysqli_stmt_init($conn);
+    mysqli_stmt_prepare($stmt, $sql);
 
+    $status = "PENDING";
+    mysqli_stmt_bind_param($stmt, "ssi", $address, $status, $uid);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+
+    $orderID = mysql_insert_id();
+
+    // Add order items
+    $cartArr = fetch_cart($conn, $uid);
+
+    foreach ($cartArr as $item) {
+      createOrderItem($conn, $item, $orderID);
+    }
+
+    header("location: /bookworm/pages/checkout_done?status=ORDER_PLACED");
+    exit();
+  }
+
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  // Create Order Item: Create an id for an item in an order
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  function createOrderItem($conn, $item, $orderID) {
+    $sql = "INSERT INTO order_item (pid, oid, price) VALUES (?, ?, ?);";
+    $stmt = mysqli_stmt_init($conn);
+    mysqli_stmt_prepare($stmt, $sql);
+
+    mysqli_stmt_bind_param($stmt, "iii", $item["id"], $orderID, $item["price"]);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
   }
 
  ?>
