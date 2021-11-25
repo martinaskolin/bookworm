@@ -69,8 +69,11 @@
   else { echo "No match could be found"; }
   }
 
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  // Fetch cart: returns all products a user has in their cart
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   function fetch_cart($conn, $uid) {
-    $sql = "SELECT p.* FROM cart_item ci, product p WHERE ci.user_id = ? AND p.id = ci.pid;";
+    $sql = "SELECT p.*, ci.id FROM cart_item ci, product p WHERE ci.user_id = ? AND p.id = ci.pid;";
     $stmt = mysqli_stmt_init($conn);
 
     mysqli_stmt_bind_param($stmt, "s", $uid);
