@@ -62,18 +62,22 @@
         else { echo "<img src='/bookworm/resources/images/img_missing.jpg'>"; }
 
         echo "<p>" . $product['name'] . "</p>";
-        echo "<a href=''> " . $product['price'] . " <i class='bi-bag-fill'></i> </a>";
+        echo "<a href='/bookworm/includes/addtocart.inc.php?id=".$product['id']."' target='_blank'> " . $product['price'] . " <i class='bi-bag-fill'></i> </a>";
         echo "</div>";
       }
     }
   else { echo "No match could be found"; }
   }
 
+  function add_to_cart($conn, $pid, $uid) {
+    $conn->query("INSERT INTO cart_item(pid, uid) VALUES (". $pid . ", " . $uid . ")");
+  }
+
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // Fetch cart: returns all products a user has in their cart
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   function fetch_cart($conn, $uid) {
-    $sql = "SELECT p.*, ci.id FROM cart_item ci, product p WHERE ci.user_id = ? AND p.id = ci.pid;";
+    $sql = "SELECT p.*, ci.id FROM cart_item ci, product p WHERE ci.uid = ? AND p.id = ci.pid;";
     $stmt = mysqli_stmt_init($conn);
 
     mysqli_stmt_bind_param($stmt, "s", $uid);
