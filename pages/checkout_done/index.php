@@ -12,22 +12,12 @@
 
     <div class="checkout-div">
       <div class="checkout-header">
-        <p>Checkout</p>
+        <p>Your Order Has Been Placed!</p>
       </div>
 
       <section class="checkout-form">
-        <form action="../../includes/checkout.inc.php" method="post">
-          <input type="text" name="address" placeholder="Address...">
-          <button type="submit" name="submit">Place Order</button>
-        </form>
+        <!--<p>Your items will be sent to you soon</p>-->
       </section>
-
-      <?php
-      //  $status = $_GET["status"];
-      //  if (isset($_GET["status"]) && $status == "ORDER_PLACED") {
-      //    echo "Order Placed";
-      //  }
-      ?>
 
     </div>
 

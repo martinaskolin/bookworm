@@ -20,10 +20,21 @@
   }
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  // Check Email: returns true if email is ok
+  // Check Email: returns true if email is valid
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   function checkEmail($email) {
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+      return true;
+    }
+    return false;
+  }
+
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  // Check For Existing Email: returns true if email already is in the table
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  function checkForExistingEmail($conn, $email) {
+    $emailArr = fetch_emails($conn);
+    if ($emailArr != null && in_array($email, $emailArr)) {
       return true;
     }
     return false;
@@ -51,11 +62,36 @@
         else { echo "<img src='/bookworm/resources/images/img_missing.jpg'>"; }
 
         echo "<p>" . $product['name'] . "</p>";
-        echo "<a href=''> " . $product['price'] . " <i class='bi-bag-fill'></i> </a>";
+        echo "<a href='/bookworm/includes/addtocart.inc.php?id=".$product['id']."' target='_blank'> " . $product['price'] . " <i class='bi-bag-fill'></i> </a>";
         echo "</div>";
       }
     }
   else { echo "No match could be found"; }
+  }
+
+  function add_to_cart($conn, $pid, $uid) {
+    $conn->query("INSERT INTO cart_item(pid, uid) VALUES (". $pid . ", " . $uid . ")");
+  }
+
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  // Fetch cart: returns all products a user has in their cart
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  function fetch_cart($conn, $uid) {
+    $sql = "SELECT p.* FROM cart_item ci, product p WHERE ci.uid = ? AND p.id = ci.pid;";
+    $stmt = mysqli_stmt_init($conn);
+    mysqli_stmt_prepare($stmt, $sql);
+
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+      header("location: /bookworm/pages/checkout?error=STMT_FAILED");
+      exit();
+    }
+
+    mysqli_stmt_bind_param($stmt, "i", $uid);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    mysqli_stmt_close($stmt);
+
+    return $result;
   }
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -76,6 +112,26 @@
     mysqli_stmt_close($stmt);
 
     if ($row = mysqli_fetch_assoc($result)) { return $row;}
+    else { return false; }
+  }
+
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  // Fetch emails: returns all email addresses in the user table
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  function fetch_emails($conn) {
+    $sql = "SELECT email FROM user";
+    $stmt = mysqli_stmt_init($conn);
+
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+      header("location: /bookworm/pages/signup?error=STMT_FAILED");
+      exit();
+    }
+
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    mysqli_stmt_close($stmt);
+
+    if ($col = mysqli_fetch_assoc($result)) { return $col;}
     else { return false; }
   }
 
@@ -176,19 +232,50 @@
     }
   }
 
-/*  function getProductsInCart($conn){
-    //not sure if it works - dont have testing options avaliable
-    $user = fetch_user($conn, $_COOKIE["cookie_loggedIn"]);
-    $sql = "SELECT * FROM cart WHERE email = $user";
-    $result = mysqli_query($conn, $sql);
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  // Place Order: Place an order on one or multiple items
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  function placeOrder($conn, $address, $uid) {
+    // Add order parent
+    $sql = "INSERT INTO order_parent (address, status, uid) VALUES (?, ?, ?);";
+    $stmt = mysqli_stmt_init($conn);
+    mysqli_stmt_prepare($stmt, $sql);
 
-    if (mysqli_num_rows($result) > 0) {
-      $row = fetch_assoc($result);
-      return $row;
+    $status = "PENDING";
+    mysqli_stmt_bind_param($stmt, "ssi", $address, $status, $uid);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+
+    // Add order items
+    $result = $conn->query("SELECT LAST_INSERT_ID();");
+    if ($result2 = $result->fetch_assoc()) {
+      $oid = $result2["LAST_INSERT_ID()"];
+
+      $cartArr = fetch_cart($conn, $uid);
+
+      while ($item = $cartArr->fetch_assoc()) {
+        echo "While loop";
+        $id = $item["id"];
+        $price = $item["price"];
+        createOrderItem($conn, $oid, $id, $price);
+      }
     }
-    else {
-      return NULL;
-    }
-  }*/
+
+    header("location: /bookworm/pages/checkout_done?status=ORDER_PLACED");
+    exit();
+  }
+
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  // Create Order Item: Create an id for an item in an order
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  function createOrderItem($conn, $oid, $id, $price) {
+    $sql = "INSERT INTO order_item (pid, oid, price) VALUES (?, ?, ?);";
+    $stmt = mysqli_stmt_init($conn);
+    mysqli_stmt_prepare($stmt, $sql);
+
+    mysqli_stmt_bind_param($stmt, "iii", $id, $oid, $price);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+  }
 
  ?>
