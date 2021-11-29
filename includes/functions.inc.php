@@ -41,34 +41,18 @@
   }
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  // Display Products: Displays all products specified
+  // Fetch Product: Returns all product and additional product information
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  function displayProducts($conn) {
-    $sql = "SELECT * FROM product;"; // change later to filter products
+  function fetch_products($conn) {
+    $sql = "SELECT * FROM product LEFT JOIN product_add ON product.id = product_add.pid;"; // change later to filter products
     $result = $conn->query($sql);
 
-    if ($result->num_rows > 0) {
-      // Display all results from query
-      while ($product = $result->fetch_assoc()){
-        $sql = "SELECT * FROM product_add pa inner join product p on pa.pid = p.id WHERE p.id = '" . $product['id'] . "'"; // change to more time efficient solution
-        $result_add = $conn->query($sql);
-
-        echo "<div>";
-        // Fetch additional information
-        if ($result_add->num_rows == 1) {
-          $product_add = $result_add->fetch_assoc();
-          echo "<img src='" . $product_add['img_dir'] . "'>";
-        }
-        else { echo "<img src='/bookworm/resources/images/img_missing.jpg'>"; }
-
-        echo "<p>" . $product['name'] . "</p>";
-        echo "<a href='/bookworm/includes/addtocart.inc.php?id=".$product['id']."' target='_blank'> " . $product['price'] . " <i class='bi-bag-fill'></i> </a>";
-        echo "</div>";
-      }
-    }
-  else { echo "No match could be found"; }
+    return $result;
   }
 
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  // Add to Cart: Adds pid and cid as new entry into cart_item (NOT PREP. STMT.)
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   function add_to_cart($conn, $pid, $uid) {
     $conn->query("INSERT INTO cart_item(pid, uid) VALUES (". $pid . ", " . $uid . ")");
   }

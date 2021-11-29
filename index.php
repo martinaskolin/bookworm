@@ -17,7 +17,26 @@
 
     <!-- ~~~~~~~~~~~~~~~ Product Container ~~~~~~~~~~~~~~~ -->
     <div class="product-container">
-      <?php displayProducts($conn); ?>
+      <?php
+
+      $result = fetch_products($conn);
+
+      if ($result->num_rows > 0) {
+        while ($product = $result->fetch_assoc()) {
+
+          echo "<div>";
+          if ($product['img_dir'] != null) { echo "<img src='" . $product['img_dir'] . "'>"; } // Img exist
+          else { echo "<img src='/bookworm/resources/images/img_missing.jpg'>"; } // Img doesnt exist
+          echo "<p>" . $product['name'] . "</p>";
+          echo "<a href='/bookworm/includes/addtocart.inc.php?id=" . $product['id'] . "' target='_blank'> " . $product['price'] . " <i class='bi-bag-fill'></i> </a>";
+          echo "</div>";
+
+        }
+      }
+
+      else { echo "No match could be found"; }
+
+      ?>
     </div>
 
   </body>
