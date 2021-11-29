@@ -236,29 +236,42 @@
   // Place Order: Place an order on one or multiple items
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   function placeOrder($conn, $address, $uid) {
-    // Add order parent
-    $sql = "INSERT INTO order_parent (address, status, uid) VALUES (?, ?, ?);";
-    $stmt = mysqli_stmt_init($conn);
-    mysqli_stmt_prepare($stmt, $sql);
+    /* Tell mysqli to throw an exception if an error occurs */
+    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+    $conn->begin_transaction();
 
-    $status = "PENDING";
-    mysqli_stmt_bind_param($stmt, "ssi", $address, $status, $uid);
-    mysqli_stmt_execute($stmt);
-    mysqli_stmt_close($stmt);
+    try {
+      // Add order parent
+      $sql = "INSERT INTO order_parent (address, status, uid) VALUES (?, ?, ?);";
+      $stmt = mysqli_stmt_init($conn);
+      mysqli_stmt_prepare($stmt, $sql);
 
-    // Add order items
-    $result = $conn->query("SELECT LAST_INSERT_ID();");
-    if ($result2 = $result->fetch_assoc()) {
-      $oid = $result2["LAST_INSERT_ID()"];
+      $status = "PENDING";
+      mysqli_stmt_bind_param($stmt, "ssi", $address, $status, $uid);
+      mysqli_stmt_execute($stmt);
+      mysqli_stmt_close($stmt);
 
-      $cartArr = fetch_cart($conn, $uid);
+      // Add order items
+      $result = $conn->query("SELECT LAST_INSERT_ID();");
+      if ($result2 = $result->fetch_assoc()) {
+        $oid = $result2["LAST_INSERT_ID()"];
 
-      while ($item = $cartArr->fetch_assoc()) {
-        echo "While loop";
-        $id = $item["id"];
-        $price = $item["price"];
-        createOrderItem($conn, $oid, $id, $price);
+        $cartArr = fetch_cart($conn, $uid);
+
+        while ($item = $cartArr->fetch_assoc()) {
+          echo "While loop";
+          $id = $item["id"];
+          $price = $item["price"];
+          createOrderItem($conn, $oid, $id, $price);
+        }
+
+        // Commit changes if this point is reached
+        $conn->commit();
       }
+    }
+    catch (mysqli_sql_exception $exception) {
+      $conn->rollback();
+      throw $exception;
     }
 
     header("location: /bookworm/pages/checkout_done?status=ORDER_PLACED");
