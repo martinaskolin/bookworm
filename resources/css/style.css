@@ -69,3 +69,34 @@ body {
 .product-container a:hover {
   background-color: #c40e0e;
 }
+
+/* --------------- Form --------------- */
+
+form {
+  text-align: center;
+  margin-top: 2vw;
+}
+
+form input {
+  background-color: #525252;
+  border: none;
+  width: 400px;
+  padding: 10px;
+  margin-top: 7px;
+  color: white;
+  font-size: 1em;
+}
+
+form input::placeholder {
+  font-style: italic;
+}
+
+form button {
+  width: 420px;
+  padding: 10px;
+  margin-top: 7px;
+  background-color: red;
+  border: none;
+  color: white;
+  font-size: 1em;
+}
