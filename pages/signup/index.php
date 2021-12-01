@@ -23,6 +23,26 @@
           <input type="password" name="pwd" placeholder="Password...">
           <button type="submit" name="submit">Sign Up</button>
         </form>
+        <h2><?php
+        if (isset($_GET["error"])) {
+          $error = $_GET["error"];
+          if ($error == "none") {
+            echo "Account created!";
+          }
+          elseif ($error == "STMT_FAILED") {
+            echo "Unexpected error when creating account";
+          }
+          elseif ($error == "EMPTY_INPUT") {
+            echo "Please fill in all the fields!";
+          }
+          elseif ($error == "INVALID_EMAIL") {
+            echo "Please enter a valid email!";
+          }
+          elseif ($error == "EMAIL_ALREADY_EXISTS") {
+            echo "This email already has an account!";
+          }
+        }
+        ?></h2>
       </section>
     </div>
 

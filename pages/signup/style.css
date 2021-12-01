@@ -48,3 +48,7 @@ button[type=submit] {
 button[type=submit]:hover {
   background-color: #15947b;
 }
+
+h2 {
+  color: black;
+}
