@@ -252,29 +252,38 @@
         $cartArr = fetch_cart($conn, $uid);
 
         while ($item = $cartArr->fetch_assoc()) {
-          echo "While loop";
+          $cartArrUpdated = fetch_cart($conn, $uid);
+          $itemUpdated = $cartArrUpdated->fetch_assoc();
+          if ($itemUpdated["stock"] == 0) {
+            throw new Exception("Empty stock.");
+          }
           $id = $item["id"];
           $price = $item["price"];
-          createOrderItem($conn, $oid, $id, $price);
+          createOrderItem($conn, $oid, $id, $price, $uid);
         }
 
         // Commit changes if this point is reached
         $conn->commit();
+
+        header("location: /bookworm/pages/checkout_done?status=ORDER_PLACED");
+        exit();
       }
     }
     catch (mysqli_sql_exception $exception) {
       $conn->rollback();
       throw $exception;
     }
-
-    header("location: /bookworm/pages/checkout_done?status=ORDER_PLACED");
-    exit();
+    catch (Exception $e) {
+      $conn->rollback();
+      header("location: /bookworm/pages/checkout?status=ORDER_NOT_PLACED");
+      exit();
+    }
   }
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // Create Order Item: Create an id for an item in an order
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  function createOrderItem($conn, $oid, $id, $price) {
+  function createOrderItem($conn, $oid, $id, $price, $uid) {
     $sql = "INSERT INTO order_item (pid, oid, price) VALUES (?, ?, ?);";
     $stmt = mysqli_stmt_init($conn);
     mysqli_stmt_prepare($stmt, $sql);
@@ -282,6 +291,12 @@
     mysqli_stmt_bind_param($stmt, "iii", $id, $oid, $price);
     mysqli_stmt_execute($stmt);
     mysqli_stmt_close($stmt);
+
+    // Decrease stock by one
+    $conn->query("UPDATE product SET stock=stock-1 WHERE id=$id;");
+
+    // Remove item from cart
+    $conn->query("DELETE FROM cart_item WHERE pid=$id AND uid=$uid LIMIT 1");
   }
 
  ?>

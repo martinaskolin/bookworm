@@ -8,6 +8,15 @@
   </head>
   <body>
 
+    <!-- Check for URL manipulation -->
+    <?php
+      if(!isset($_SERVER['HTTP_REFERER'])){
+        // redirect them to your desired location
+        header('location: /bookworm/');
+        exit();
+      }
+    ?>
+
     <?php include_once '../../includes/header.inc.php'; ?>
 
     <div class="checkout-div">
@@ -16,7 +25,6 @@
       </div>
 
       <section class="checkout-form">
-        <!--<p>Your items will be sent to you soon</p>-->
       </section>
 
     </div>
