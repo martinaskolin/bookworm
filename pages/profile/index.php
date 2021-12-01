@@ -31,6 +31,29 @@
           <input type="password" name="oldPwd" placeholder="Old password (required)..."><br>
           <button type="submit" name="submit">Save</button>
         </form>
+        <h2><?php
+        if (isset($_GET["error"])) {
+          $error = $_GET["error"];
+          if ($error == "none") {
+            echo "Profile updated!";
+          }
+          elseif ($error == "STMT_FAILED") {
+            echo "Unexpected error when updating profile";
+          }
+          elseif ($error == "WRONG_PASSWORD") {
+            echo "Enter your current password to make changes!";
+          }
+          elseif ($error == "NEW_PASSWORD_SAME_AS_OLD") {
+            echo "New password is the same as current password!";
+          }
+          elseif ($error == "INVALID_EMAIL") {
+            echo "Please enter a valid email!";
+          }
+          elseif ($error == "EMAIL_ALREADY_EXISTS") {
+            echo "This email already has an account!";
+          }
+        }
+        ?></h2>
       </section>
     </div>
 
