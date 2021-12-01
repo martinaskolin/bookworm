@@ -29,7 +29,7 @@
           else { echo "<img src='/bookworm/resources/images/img_missing.jpg'>"; } // Img doesnt exist
           echo "<p>" . $product['name'] . "</p>";
 
-          if ($userArr['admin'] == 0) {
+          if (!isset($_SESSION["uid"]) || $userArr['admin'] == 0) {
             echo "<a href='/bookworm/includes/addtocart.inc.php?id=" . $product['id'] . "' target='_blank'> " . $product['price'] . " <i class='bi-bag-fill'></i> </a>";
           }
           else {

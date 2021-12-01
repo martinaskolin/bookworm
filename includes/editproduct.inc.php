@@ -12,7 +12,9 @@
 
   // Delete
   if (isset($_POST["delete"])) {
-    $conn->query("DELETE product, product_add FROM product INNER JOIN product_add ON product.id = product_add.pid WHERE product.id = ".$_GET['id'].";");
+    $conn->query("DELETE FROM product WHERE product.id = ".$_GET['id'].";");
+    header("location: /bookworm/");
+    exit();
   }
   // Update product information
   else {
@@ -21,7 +23,7 @@
     mysqli_stmt_prepare($stmt, $sql);
 
     if (!mysqli_stmt_prepare($stmt, $sql)) {
-      header("location: /bookworm/pages/checkout?error=STMT_FAILED");
+      header("location: /bookworm/");
       exit();
     }
 
