@@ -12,7 +12,7 @@
 
     <div class="login-div">
       <div class="login-header">
-        <p>Log In To Account</p>
+        <h1><i class='bi-person-circle'></i></h1>
       </div>
 
       <section class="login-form">

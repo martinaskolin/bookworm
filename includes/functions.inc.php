@@ -266,7 +266,7 @@
     }
     catch (Exception $e) {
       $conn->rollback();
-      header("location: /bookworm/pages/checkout?error=SOME_ITEMS_OUT_OF_STOCK");
+      header("location: /bookworm/pages/checkout?status=ORDER_NOT_PLACED");
       exit();
     }
   }
