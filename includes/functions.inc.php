@@ -228,19 +228,19 @@
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // Place Order: Place an order on one or multiple items
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  function placeOrder($conn, $address, $uid) {
+  function placeOrder($conn, $fname, $lname, $address, $zipcode, $city, $country, $email, $uid) {
     /* Tell mysqli to throw an exception if an error occurs */
     mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
     $conn->begin_transaction();
 
     try {
       // Add order parent
-      $sql = "INSERT INTO order_parent (address, status, uid) VALUES (?, ?, ?);";
+      $sql = "INSERT INTO order_parent (fname, lname, address, zip_code, city, country, email, status, uid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
       $stmt = mysqli_stmt_init($conn);
       mysqli_stmt_prepare($stmt, $sql);
 
       $status = "PENDING";
-      mysqli_stmt_bind_param($stmt, "ssi", $address, $status, $uid);
+      mysqli_stmt_bind_param($stmt, "ssssssssi", $fname, $lname, $address, $zipcode, $city, $country, $email, $status, $uid);
       mysqli_stmt_execute($stmt);
       mysqli_stmt_close($stmt);
 
@@ -259,7 +259,8 @@
           }
           $id = $item["id"];
           $price = $item["price"];
-          createOrderItem($conn, $oid, $id, $price, $uid);
+          $ISBN = $item["ISBN"];
+          createOrderItem($conn, $oid, $id, $price, $ISBN, $uid);
         }
 
         // Commit changes if this point is reached
@@ -275,7 +276,7 @@
     }
     catch (Exception $e) {
       $conn->rollback();
-      header("location: /bookworm/pages/checkout?status=ORDER_NOT_PLACED");
+      header("location: /bookworm/pages/checkout?error=ORDER_NOT_PLACED");
       exit();
     }
   }
@@ -283,12 +284,12 @@
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // Create Order Item: Create an id for an item in an order
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  function createOrderItem($conn, $oid, $id, $price, $uid) {
-    $sql = "INSERT INTO order_item (pid, oid, price) VALUES (?, ?, ?);";
+  function createOrderItem($conn, $oid, $id, $price, $ISBN, $uid) {
+    $sql = "INSERT INTO order_item (oid, price, ISBN) VALUES (?, ?, ?);";
     $stmt = mysqli_stmt_init($conn);
     mysqli_stmt_prepare($stmt, $sql);
 
-    mysqli_stmt_bind_param($stmt, "iii", $id, $oid, $price);
+    mysqli_stmt_bind_param($stmt, "iis", $oid, $price, $ISBN);
     mysqli_stmt_execute($stmt);
     mysqli_stmt_close($stmt);
 

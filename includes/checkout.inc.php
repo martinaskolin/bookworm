@@ -8,7 +8,13 @@
   }
 
   // Variables
+  $fname = $_POST["fname"];
+  $lname = $_POST["lname"];
   $address = $_POST["address"];
+  $zipcode = $_POST["zipcode"];
+  $city = $_POST["city"];
+  $country = $_POST["country"];
+  $email = $_POST["email"];
 
   // used PHP scripts
   require_once "dbh.inc.php";
@@ -16,7 +22,13 @@
 
   // Error checks
   if (checkEmpty(array($address)) !== false) { header("location: ../pages/checkout?error=EMPTY_INPUT"); exit(); }
+  if (checkEmail($email) !== false) { header("location: /bookworm/pages/checkout?error=INVALID_EMAIL"); exit(); }
+  $cart = fetch_cart($conn, $_SESSION["uid"]);
+  if (!$cart->fetch_assoc()) {
+    header("location: /bookworm/pages/checkout?error=EMPTY_CART");
+    exit();
+  }
 
-  placeOrder($conn, $address, $_SESSION["uid"]);
+  placeOrder($conn, $fname, $lname, $address, $zipcode, $city, $country, $email, $_SESSION["uid"]);
 
  ?>

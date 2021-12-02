@@ -24,15 +24,30 @@
 
       <section class="inputContainer-form">
         <form action="../../includes/checkout.inc.php" method="post">
+          <input type="inputText" name="fname" placeholder="First name...">
+          <input type="inputText" name="lname" placeholder="Last name...">
           <input type="inputText" name="address" placeholder="Address...">
+          <input type="inputText" name="zipcode" placeholder="Zip code...">
+          <input type="inputText" name="city" placeholder="City...">
+          <input type="inputText" name="country" placeholder="Country...">
+          <input type="inputText" name="email" placeholder="Email...">
           <button type="inputSubmit" name="submit">Place Order</button>
         </form>
         <h2 class="errorMessage"><?php
-          if (isset($_GET["status"]) && $_GET["status"] == "ORDER_NOT_PLACED") {
-            echo "The order could not be placed since some items are out of stock!";
-          }
-          elseif (isset($_GET["error"]) && $_GET["error"] == "EMPTY_INPUT") {
-            echo "Please enter an address";
+          if (isset($_GET["error"])) {
+            $error = $_GET["error"];
+            if ($error == "ORDER_NOT_PLACED") {
+              echo "The order could not be placed since some items are out of stock!";
+            }
+            elseif ($error == "EMPTY_INPUT") {
+              echo "Please fill in all the fields!";
+            }
+            elseif ($error == "INVALID_EMAIL") {
+              echo "Please enter a valid email!";
+            }
+            elseif ($error == "EMPTY_CART") {
+              echo "Your cart is empty, order not placed";
+            }
           }
         ?></h2>
       </section>
