@@ -28,7 +28,13 @@
           if ($product['img_dir'] != null) { echo "<img src='" . $product['img_dir'] . "'>"; } // Img exist
           else { echo "<img src='/bookworm/resources/images/img_missing.jpg'>"; } // Img doesnt exist
           echo "<p>" . $product['name'] . "</p>";
-          echo "<a href='/bookworm/includes/addtocart.inc.php?id=" . $product['id'] . "' target='_blank'> " . $product['price'] . " <i class='bi-bag-fill'></i> </a>";
+
+          if (!isset($_SESSION["uid"]) || $userArr['admin'] == 0) {
+            echo "<a href='/bookworm/includes/addtocart.inc.php?id=" . $product['id'] . "' target='_blank'> " . $product['price'] . " <i class='bi-bag-fill'></i> </a>";
+          }
+          else {
+            echo "<a href='/bookworm/pages/edit/index.php?id=" . $product['id'] . "'> Edit <i class='bi-pencil-square'></i> </a>";
+          }
           echo "</div>";
 
         }

@@ -3,7 +3,7 @@
 
   // If submit is not set inside the code send them back (someone tryed to access the page through the url)
   if (!isset($_POST["submit"])) {
-    header("location: ../pages/profile");
+    header("location: /bookworm/pages/profile/");
     exit();
   }
 
