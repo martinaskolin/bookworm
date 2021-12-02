@@ -19,22 +19,28 @@
     <div class="product-container">
       <?php
 
+      // Product independent Variables
+      // $is_signedin = isset($_SESSION["uid"]); (Defined in header.inc.php)
+      // $is_admin = ($is_signedin && $user['admin'] == 1); (Defined in header.inc.php)
+      $default_img = '/bookworm/resources/images/img_missing.jpg';
+
       $result = fetch_products($conn);
 
       if ($result->num_rows > 0) {
         while ($product = $result->fetch_assoc()) {
 
+          // Product dependent Variables
+          $add_exist = ($product['img_dir'] != null); // Additional information exist for the product
+
+          // Print product
           echo "<div>";
-          if ($product['img_dir'] != null) { echo "<img src='" . $product['img_dir'] . "'>"; } // Img exist
-          else { echo "<img src='/bookworm/resources/images/img_missing.jpg'>"; } // Img doesnt exist
+          if ($add_exist) { echo "<img src='" . $product['img_dir'] . "'>"; } // Print Product Image
+          else { echo "<img src='" . $default_img . "'>"; }                   // Print Default Image
           echo "<p>" . $product['name'] . "</p>";
 
-          if (!isset($_SESSION["uid"]) || $userArr['admin'] == 0) {
-            echo "<a href='/bookworm/includes/addtocart.inc.php?id=" . $product['id'] . "' target='_blank'> " . $product['price'] . " <i class='bi-bag-fill'></i> </a>";
-          }
-          else {
-            echo "<a href='/bookworm/pages/edit/index.php?id=" . $product['id'] . "'> Edit <i class='bi-pencil-square'></i> </a>";
-          }
+          if ($is_admin) { echo "<a href='/bookworm/pages/edit/index.php?id=" . $product['id'] . "'> Edit <i class='bi-pencil-square'></i> </a>"; }                             // Admin edit
+          else { echo "<a href='/bookworm/includes/addtocart.inc.php?id=" . $product['id'] . "' target='_blank'> " . $product['price'] . " <i class='bi-bag-fill'></i> </a>"; } // Customer buy
+
           echo "</div>";
 
         }

@@ -1,10 +1,7 @@
 <?php
 
   // If submit is not set inside the code send them back (someone tryed to access the page through the url)
-  if (!isset($_POST["submit"])) {
-    header("location: /bookworm/pages/login");
-    exit();
-  }
+  if (!isset($_POST["submit"])) { header("location: /bookworm/pages/login"); exit(); }
 
   // Variables
   $email = $_POST["email"];

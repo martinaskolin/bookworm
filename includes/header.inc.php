@@ -19,17 +19,23 @@
        Bookworm
        <?php
 
+       // Variables
+       $is_signedin = isset($_SESSION["uid"]);
+       $is_admin = false;
+       $user = null;
+
         // Not Signed in
-        if (!isset($_SESSION["uid"])) {
+        if (!$is_signedin) {
           echo "<li> <a href='/bookworm/pages/signup'><i class='bi-pencil-square'></i> Sign Up</a> </li>";
           echo "<li> <a href='/bookworm/pages/login'><i class='bi-person-fill'></i> Log In</a> </li>";
         }
         // Signed in
         else {
           $user = fetch_user($conn, $_SESSION["uid"], null);
+          $is_admin = ($is_signedin && $user['admin'] == 1);
 
           // Customer
-          if ($user['admin'] == 0) {
+          if (!$is_admin) {
             echo "<li> <a href='/bookworm/includes/logout.inc.php'><i class='bi-box-arrow-left'></i> Log Out</a> </li>";
             echo "<li> <a href='/bookworm/pages/cart/index.php'><i class='bi-bag-fill'></i> Cart</a> </li>";
             echo "<li> <a href='/bookworm/pages/profile'><i class='bi-person-circle'></i> " . $user['fname'] . " " . $user['lname'] . "</a> </li>";
