@@ -3,27 +3,34 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="/bookworm/pages/signup/style.css">
     <title></title>
   </head>
   <body>
 
     <?php include_once '../../includes/header.inc.php'; ?>
 
-    <div class="signup-div">
-      <div class="signup-header">
+    <!-- Disable signup page when logged in -->
+    <?php
+      if(isset($_SESSION['uid'])) {
+        header('location: /bookworm/');
+        exit();
+      }
+    ?>
+
+    <div class="inputContainer-div">
+      <div class="inputContainer-header">
         <p>Create Account</p>
       </div>
 
-      <section class="signup-form">
+      <section class="inputContainer-form">
         <form action="../../includes/signup.inc.php" method="post">
-          <input type="text" name="fname" placeholder="First Name...">
-          <input type="text" name="lname" placeholder="Last Name...">
-          <input type="text" name="email" placeholder="Email...">
+          <input type="inputText" name="fname" placeholder="First Name...">
+          <input type="inputText" name="lname" placeholder="Last Name...">
+          <input type="inputText" name="email" placeholder="Email...">
           <input type="password" name="pwd" placeholder="Password...">
-          <button type="submit" name="submit">Sign Up</button>
+          <button type="inputSubmit" name="submit">Sign Up</button>
         </form>
-        <h2><?php
+        <h2 class="errorMessage"><?php
         if (isset($_GET["error"])) {
           $error = $_GET["error"];
           if ($error == "none") {
