@@ -19,7 +19,7 @@
 
     <div class="inputContainer-div">
       <div class="inputContainer-header">
-        <p>Create Account</p>
+        <h1><i class='bi-pencil-square'></i></h1>
       </div>
 
       <section class="inputContainer-form">
