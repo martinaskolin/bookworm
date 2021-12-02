@@ -38,7 +38,7 @@
           <input type="password" name="oldPwd" placeholder="Old password (required)..."><br>
           <button type="inputSubmit" name="submit">Save</button>
         </form>
-        <h2 class="errorMessage"><?php
+        <p class="errorMessage"><?php
         if (isset($_GET["error"])) {
           $error = $_GET["error"];
           if ($error == "none") {
@@ -60,7 +60,7 @@
             echo "This email already has an account!";
           }
         }
-        ?></h2>
+        ?></p>
       </section>
     </div>
 

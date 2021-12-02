@@ -28,11 +28,11 @@
           <input type="password" name="pwd" placeholder="Password...">
           <button type="inputSubmit" name="submit">Log In</button>
         </form>
-        <h2 class="errorMessage"><?php
+        <p class="errorMessage"><?php
           if (isset($_GET["error"]) && $_GET["error"] == "WRONG_LOGIN") {
             echo "Incorrect credentials!";
           }
-        ?></h2>
+        ?></p>
       </section>
     </div>
   </body>

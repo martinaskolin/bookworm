@@ -33,7 +33,7 @@
           <input type="inputText" name="email" placeholder="Email...">
           <button type="inputSubmit" name="submit">Place Order</button>
         </form>
-        <h2 class="errorMessage"><?php
+        <p class="errorMessage"><?php
           if (isset($_GET["error"])) {
             $error = $_GET["error"];
             if ($error == "ORDER_NOT_PLACED") {
@@ -49,7 +49,7 @@
               echo "Your cart is empty, order not placed";
             }
           }
-        ?></h2>
+        ?></p>
       </section>
 
     </div>

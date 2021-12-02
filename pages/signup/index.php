@@ -30,7 +30,7 @@
           <input type="password" name="pwd" placeholder="Password...">
           <button type="inputSubmit" name="submit">Sign Up</button>
         </form>
-        <h2 class="errorMessage"><?php
+        <p class="errorMessage"><?php
         if (isset($_GET["error"])) {
           $error = $_GET["error"];
           if ($error == "none") {
@@ -49,7 +49,7 @@
             echo "This email already has an account!";
           }
         }
-        ?></h2>
+        ?></p>
       </section>
     </div>
 
