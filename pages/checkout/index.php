@@ -9,10 +9,10 @@
 
     <!-- Check for URL manipulation, UNCOMMENT WHEN CART IS DONE!!! -->
     <?php
-      if(!isset($_SERVER['HTTP_REFERER'])) {
+    /*  if(!isset($_SERVER['HTTP_REFERER'])) {
         header('location: /bookworm/');
         exit();
-      }
+      } */
     ?>
 
     <?php include_once '../../includes/header.inc.php'; ?>
