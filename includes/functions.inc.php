@@ -8,6 +8,15 @@
   }
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  // Check Admin: returns true if user is admin
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  function checkAdmin($conn, $uid) {
+    $userArr = fetch_user($conn, $_SESSION["uid"], null);
+    if ($userArr['admin'] == 1) { return true; }
+    else { return false; }
+  }
+
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // Check Empty: returns true if any of the elements in array is empty
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   function checkEmpty($inputArr) {
@@ -41,34 +50,18 @@
   }
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  // Display Products: Displays all products specified
+  // Fetch Product: Returns all product and additional product information
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  function displayProducts($conn) {
-    $sql = "SELECT * FROM product;"; // change later to filter products
+  function fetch_products($conn) {
+    $sql = "SELECT * FROM product LEFT JOIN product_add ON product.id = product_add.pid;"; // change later to filter products
     $result = $conn->query($sql);
 
-    if ($result->num_rows > 0) {
-      // Display all results from query
-      while ($product = $result->fetch_assoc()){
-        $sql = "SELECT * FROM product_add pa inner join product p on pa.pid = p.id WHERE p.id = '" . $product['id'] . "'"; // change to more time efficient solution
-        $result_add = $conn->query($sql);
-
-        echo "<div>";
-        // Fetch additional information
-        if ($result_add->num_rows == 1) {
-          $product_add = $result_add->fetch_assoc();
-          echo "<img src='" . $product_add['img_dir'] . "'>";
-        }
-        else { echo "<img src='/bookworm/resources/images/img_missing.jpg'>"; }
-
-        echo "<p>" . $product['name'] . "</p>";
-        echo "<a href='/bookworm/includes/addtocart.inc.php?id=".$product['id']."' target='_blank'> " . $product['price'] . " <i class='bi-bag-fill'></i> </a>";
-        echo "</div>";
-      }
-    }
-  else { echo "No match could be found"; }
+    return $result;
   }
 
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  // Add to Cart: Adds pid and cid as new entry into cart_item (NOT PREP. STMT.)
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   function add_to_cart($conn, $pid, $uid) {
     $conn->query("INSERT INTO cart_item(pid, uid) VALUES (". $pid . ", " . $uid . ")");
   }
@@ -235,47 +228,76 @@
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // Place Order: Place an order on one or multiple items
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  function placeOrder($conn, $address, $uid) {
-    // Add order parent
-    $sql = "INSERT INTO order_parent (address, status, uid) VALUES (?, ?, ?);";
-    $stmt = mysqli_stmt_init($conn);
-    mysqli_stmt_prepare($stmt, $sql);
+  function placeOrder($conn, $fname, $lname, $address, $zipcode, $city, $country, $email, $uid) {
+    /* Tell mysqli to throw an exception if an error occurs */
+    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+    $conn->begin_transaction();
 
-    $status = "PENDING";
-    mysqli_stmt_bind_param($stmt, "ssi", $address, $status, $uid);
-    mysqli_stmt_execute($stmt);
-    mysqli_stmt_close($stmt);
+    try {
+      // Add order parent
+      $sql = "INSERT INTO order_parent (fname, lname, address, zip_code, city, country, email, status, uid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
+      $stmt = mysqli_stmt_init($conn);
+      mysqli_stmt_prepare($stmt, $sql);
 
-    // Add order items
-    $result = $conn->query("SELECT LAST_INSERT_ID();");
-    if ($result2 = $result->fetch_assoc()) {
-      $oid = $result2["LAST_INSERT_ID()"];
+      $status = "PENDING";
+      mysqli_stmt_bind_param($stmt, "ssssssssi", $fname, $lname, $address, $zipcode, $city, $country, $email, $status, $uid);
+      mysqli_stmt_execute($stmt);
+      mysqli_stmt_close($stmt);
 
-      $cartArr = fetch_cart($conn, $uid);
+      // Add order items
+      $result = $conn->query("SELECT LAST_INSERT_ID();");
+      if ($result2 = $result->fetch_assoc()) {
+        $oid = $result2["LAST_INSERT_ID()"];
 
-      while ($item = $cartArr->fetch_assoc()) {
-        echo "While loop";
-        $id = $item["id"];
-        $price = $item["price"];
-        createOrderItem($conn, $oid, $id, $price);
+        $cartArr = fetch_cart($conn, $uid);
+
+        while ($item = $cartArr->fetch_assoc()) {
+          $cartArrUpdated = fetch_cart($conn, $uid);
+          $itemUpdated = $cartArrUpdated->fetch_assoc();
+          if ($itemUpdated["stock"] == 0) {
+            throw new Exception("Empty stock.");
+          }
+          $id = $item["id"];
+          $price = $item["price"];
+          $ISBN = $item["ISBN"];
+          createOrderItem($conn, $oid, $id, $price, $ISBN, $uid);
+        }
+
+        // Commit changes if this point is reached
+        $conn->commit();
+
+        header("location: /bookworm/pages/checkout_done?status=ORDER_PLACED");
+        exit();
       }
     }
-
-    header("location: /bookworm/pages/checkout_done?status=ORDER_PLACED");
-    exit();
+    catch (mysqli_sql_exception $exception) {
+      $conn->rollback();
+      throw $exception;
+    }
+    catch (Exception $e) {
+      $conn->rollback();
+      header("location: /bookworm/pages/checkout?error=ORDER_NOT_PLACED");
+      exit();
+    }
   }
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // Create Order Item: Create an id for an item in an order
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  function createOrderItem($conn, $oid, $id, $price) {
-    $sql = "INSERT INTO order_item (pid, oid, price) VALUES (?, ?, ?);";
+  function createOrderItem($conn, $oid, $id, $price, $ISBN, $uid) {
+    $sql = "INSERT INTO order_item (oid, price, ISBN) VALUES (?, ?, ?);";
     $stmt = mysqli_stmt_init($conn);
     mysqli_stmt_prepare($stmt, $sql);
 
-    mysqli_stmt_bind_param($stmt, "iii", $id, $oid, $price);
+    mysqli_stmt_bind_param($stmt, "iis", $oid, $price, $ISBN);
     mysqli_stmt_execute($stmt);
     mysqli_stmt_close($stmt);
+
+    // Decrease stock by one
+    $conn->query("UPDATE product SET stock=stock-1 WHERE id=$id;");
+
+    // Remove item from cart
+    $conn->query("DELETE FROM cart_item WHERE pid=$id AND uid=$uid LIMIT 1");
   }
 
  ?>

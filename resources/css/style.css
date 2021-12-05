@@ -69,3 +69,101 @@ body {
 .product-container a:hover {
   background-color: #c40e0e;
 }
+
+/* --------------- Form --------------- */
+
+/*form {
+  text-align: center;
+  margin-top: 2vw;
+}
+
+form input {
+  background-color: #525252;
+  border: none;
+  width: 400px;
+  padding: 10px;
+  margin-top: 7px;
+  color: white;
+  font-size: 1em;
+}
+
+form input::placeholder {
+  font-style: italic;
+}
+
+form button {
+  width: 420px;
+  padding: 10px;
+  margin-top: 7px;
+  background-color: red;
+  border: none;
+  color: white;
+  font-size: 1em;
+}*/
+
+
+/* ------ Input forms such as login, signup, profile and checkout ------*/
+
+.inputContainer-div {
+  margin: auto;
+  margin-top: 5%;
+  margin-bottom: 10%;
+  width: 500px;
+  border-radius: 15px;
+  background: white;
+  overflow: hidden;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  text-align: center;
+}
+
+.inputContainer-header {
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 2em;
+  font-weight: bold;
+  background: #1ABC9C;
+}
+
+.inputContainer-form {
+  padding: 20px;
+  text-align: center;
+}
+
+input[type=inputText], [type=password] {
+  width: 50%;
+  padding: 10px 10px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+button[type=inputSubmit] {
+  width: 50%;
+  background-color: #1ABC9C;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+button[type=inputSubmit]:hover {
+  background-color: #15947b;
+}
+
+.errorMessage {
+  color: black;
+}
+
+.profileName {
+  font-size: 0.9em;
+}
+
+.profileEmail {
+  font-size: 0.5em;
+  font-weight: normal;
+}

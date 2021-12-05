@@ -2,10 +2,7 @@
   session_start();
 
   // If submit is not set inside the code send them back (someone tryed to access the page through the url)
-  if (!isset($_POST["submit"])) {
-    header("location: ../pages/profile");
-    exit();
-  }
+  if (!isset($_POST["submit"])) { header("location: /bookworm/pages/profile/"); exit(); }
 
   // Variables
   $newFname = $_POST["newFname"];
@@ -20,8 +17,8 @@
 
   // Error checks
   if ($newEmail != null){
-    if (checkEmail($newEmail) !== false) { header("location: ../pages/profile?error=INVALID_EMAIL"); exit(); }
-    if (checkForExistingEmail($conn, $newEmail)) { header("location: ../pages/profile?error=EMAIL_ALREADY_EXISTS"); exit(); }
+    if (checkEmail($newEmail) !== false) { header("location: /bookworm/pages/profile?error=INVALID_EMAIL"); exit(); }
+    if (checkForExistingEmail($conn, $newEmail)) { header("location: /bookworm/pages/profile?error=EMAIL_ALREADY_EXISTS"); exit(); }
   }
 
   editUser($conn, $newFname, $newLname, $newEmail, $newPwd, $oldPwd, $_SESSION["uid"]);

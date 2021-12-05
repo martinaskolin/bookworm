@@ -1,6 +1,7 @@
 <?php
   session_start();
   include_once $_SERVER['DOCUMENT_ROOT'] . '/bookworm/includes/dbh.inc.php';
+  include_once $_SERVER['DOCUMENT_ROOT'] . '/bookworm/includes/functions.inc.php';
  ?>
 
  <!DOCTYPE html>
@@ -17,18 +18,35 @@
      <div class="header">
        Bookworm
        <?php
-         if (isset($_SESSION["uid"])) {
-           include_once $_SERVER['DOCUMENT_ROOT'] . '/bookworm/includes/functions.inc.php';
-           $userArr = fetch_user($conn, $_SESSION["uid"], null);
 
-           echo "<li> <a href='/bookworm/includes/logout.inc.php'><i class='bi-box-arrow-left'></i> Log Out</a> </li>";
-           echo "<li> <a href='/bookworm/pages/cart/index.php'><i class='bi-bag-fill'></i> Cart</a> </li>";
-           echo "<li> <a href='/bookworm/pages/profile'><i class='bi-person-circle'></i> " . $userArr['fname'] . " " . $userArr['lname'] . "</a> </li>";
-         }
-         else {
-           echo "<li> <a href='/bookworm/pages/signup'><i class='bi-pencil-square'></i> Sign Up</a> </li>";
-           echo "<li> <a href='/bookworm/pages/login'><i class='bi-person-fill'></i> Log In</a> </li>";
-         }
+       // Variables
+       $is_signedin = isset($_SESSION["uid"]);
+       $is_admin = false;
+       $user = null;
+
+        // Not Signed in
+        if (!$is_signedin) {
+          echo "<li> <a href='/bookworm/pages/signup'><i class='bi-pencil-square'></i> Sign Up</a> </li>";
+          echo "<li> <a href='/bookworm/pages/login'><i class='bi-person-fill'></i> Log In</a> </li>";
+        }
+        // Signed in
+        else {
+          $user = fetch_user($conn, $_SESSION["uid"], null);
+          $is_admin = ($is_signedin && $user['admin'] == 1);
+
+          // Customer
+          if (!$is_admin) {
+            echo "<li> <a href='/bookworm/includes/logout.inc.php'><i class='bi-box-arrow-left'></i> Log Out</a> </li>";
+            echo "<li> <a href='/bookworm/pages/cart/index.php'><i class='bi-bag-fill'></i> Cart</a> </li>";
+            echo "<li> <a href='/bookworm/pages/profile'><i class='bi-person-circle'></i> " . $user['fname'] . " " . $user['lname'] . "</a> </li>";
+          }
+          // Administrator
+          else {
+            echo "<li> <a href='/bookworm/includes/logout.inc.php'><i class='bi-box-arrow-left'></i> Log Out</a> </li>";
+            echo "<li> <a href='/bookworm/pages/profile'><i class='bi-person-circle'></i> " . $user['fname'] . " " . $user['lname'] . " [Admin]</a> </li>";
+          }
+        }
+
         ?>
         <li> <a href='/bookworm/'><i class='bi-book'></i> Browse</a> </li>
      </div>
