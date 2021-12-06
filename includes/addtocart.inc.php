@@ -11,7 +11,13 @@
 
   if (isset($_SESSION["uid"])) {
     add_to_cart($conn, $id, $_SESSION["uid"]);
+    header("location: /bookworm/");
+    exit();
   }
-  echo "<script>window.close();</script>";
+  else {
+    header("location: /bookworm/pages/login");
+    exit();
+  }
+
 
  ?>
