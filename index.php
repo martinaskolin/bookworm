@@ -38,10 +38,8 @@
           else { echo "<img src='" . $default_img . "'>"; }                   // Print Default Image
           echo "<p>" . $product['name'] . "</p>";
 
-          if ($is_admin) { echo "<a href='/bookworm/pages/edit/index.php?id=" . $product['id'] . "'> Edit <i class='bi-pencil-square'></i> </a>"; }                             // Admin edit
-          else {
-            echo "<a href='/bookworm/includes/addtocart.inc.php?id=" . $product['id'] . "' target='_blank'> " . $product['price'] . " <i class='bi-bag-fill'></i> </a>";
-          } // Customer buy
+          if ($is_admin) { echo "<a href='/bookworm/pages/edit/index.php?id=" . $product['id'] . "'> Edit <i class='bi-pencil-square'></i> </a>"; } // Admin edit
+          else { echo "<a href='/bookworm/includes/addtocart.inc.php?id=" . $product['id'] . "'> " . $product['price'] . " <i class='bi-bag-fill'></i> </a>"; } // Customer buy
 
           echo "</div>";
 

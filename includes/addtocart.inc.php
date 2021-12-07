@@ -10,8 +10,10 @@
   require_once "functions.inc.php";
 
   if (isset($_SESSION["uid"])) {
-    $result = add_to_cart($conn, $id, $_SESSION["uid"]);
-    }
+    add_to_cart($conn, $id, $_SESSION["uid"]);
+    header("location: /bookworm/");
+    exit();
+  }
   else {
     header("location: /bookworm/pages/login");
     exit();

@@ -63,8 +63,18 @@
   // Add to Cart: Adds pid and cid as new entry into cart_item (NOT PREP. STMT.)
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   function add_to_cart($conn, $pid, $uid) {
-    $conn->query("INSERT INTO cart_item(pid, user_id) VALUES (". $pid . ", " . $uid . ")");
+    $conn->query("INSERT INTO cart_item(pid, uid) VALUES (". $pid . ", " . $uid . ")");
   }
+
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  // Remove From Cart: Removes one item from cart
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  function removeFromCart($conn, $id, $uid){
+    $conn->query("DELETE FROM cart_item WHERE pid = $id AND uid = $uid LIMIT 1;");
+    header("location: /bookworm/pages/cart?status=ITEM_REMOVED");
+    exit();
+  }
+
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // Fetch cart: returns all products a user has in their cart
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -74,7 +84,7 @@
     mysqli_stmt_prepare($stmt, $sql);
 
     if (!mysqli_stmt_prepare($stmt, $sql)) {
-      header("location: /bookworm/pages/profile?error=STMT_FAILED");
+      header("location: /bookworm/pages/cart?error=STMT_FAILED");
       exit();
     }
 
@@ -328,19 +338,6 @@
     else {
       echo "ERROR: Cart is empty!";
     }
-  }
-
-  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  // Remove item from cart
-  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  function removeFromCart($conn, $id, $uid){
-    $sql = "DELETE FROM `cart_item` WHERE pid = $id AND user_id = $uid LIMIT 1;";
-    $result = mysqli_query($conn, $sql);
-
-  }
-
-  function testPrint(){
-    echo "<p> Hello World! </p>";
   }
 
  ?>
