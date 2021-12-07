@@ -20,6 +20,10 @@
       echo "I failed";
     }
   }
-  echo "<script>window.close();</script>";
+  else {
+    header("location: /bookworm/pages/login");
+    exit();
+  }
+
 
  ?>

@@ -22,7 +22,12 @@
         <p>Checkout</p>
       </div>
 
-      <section class="inputContainer-form">
+      <!-- MOVE TO A SEPARATE FUNCTION IN "FUNCTIONS" -->
+      <div class="displayCart-div"><?php
+        displayCart($conn, $_SESSION['uid']);
+      ?></div>
+
+      <div class="inputContainer-form">
         <form action="../../includes/checkout.inc.php" method="post">
           <input type="inputText" name="fname" placeholder="First name...">
           <input type="inputText" name="lname" placeholder="Last name...">
@@ -50,7 +55,7 @@
             }
           }
         ?></p>
-      </section>
+      </div>
 
     </div>
 

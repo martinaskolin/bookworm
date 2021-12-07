@@ -228,7 +228,7 @@ function addToCart2($conn, $pid, $uid){
     else {
       session_start();
       $_SESSION["uid"] = $userArr["id"];
-      header("location: /bookworm/index.php");
+      header("location: /bookworm/");
       exit();
     }
   }
@@ -260,7 +260,7 @@ function addToCart2($conn, $pid, $uid){
         $cartArr = fetch_cart($conn, $uid);
 
         while ($item = $cartArr->fetch_assoc()) {
-          $cartArrUpdated = fetch_cart($conn, $uid);
+          $cartArrUpdated = fetch_cart($conn, $uid); // Cart must be fetched every time an item is added, to check the stock
           $itemUpdated = $cartArrUpdated->fetch_assoc();
           if ($itemUpdated["stock"] == 0) {
             throw new Exception("Empty stock.");
@@ -306,6 +306,37 @@ function addToCart2($conn, $pid, $uid){
 
     // Remove item from cart
     $conn->query("DELETE FROM cart_item WHERE pid=$id AND uid=$uid LIMIT 1");
+  }
+
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  // Display Cart: Displays the cart as a list (fitted for checkout)
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  function displayCart($conn, $uid) {
+    $cart = fetch_cart($conn, $uid);
+    $sum = 0;
+    if ($cart->num_rows > 0) {
+      while ($item = $cart->fetch_assoc()) {
+        $pid = $item["id"];
+        $result = $conn->query("SELECT * FROM product LEFT JOIN product_add ON product.id = product_add.pid WHERE id=$pid;");
+        $product = $result->fetch_assoc();
+        $default_img = '/bookworm/resources/images/img_missing.jpg';
+        $add_exist = ($product['img_dir'] != null);
+        $sum = $sum + $product['price'];
+
+        // Print item in cart
+        echo "<div class='displayCart-item'>";
+        echo "<div class='displayCart-image'>";
+        if ($add_exist) { echo "<img src='" . $product['img_dir'] . "'>"; } // Print Product Image
+        else { echo "<img src='" . $default_img . "'>"; }                // Print Default Image
+        echo "</div>";
+        echo "<div class='displayCart-text'><p>" . $product['name'] . "</p><p>Price: " . $product['price'] . "</p></div>";
+        echo "</div>";
+      }
+      echo "<div class='total-container'>Total: " . $sum . "</div>";
+    }
+    else {
+      echo "ERROR: Cart is empty!";
+    }
   }
 
  ?>

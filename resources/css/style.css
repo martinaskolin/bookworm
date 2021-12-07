@@ -167,3 +167,37 @@ button[type=inputSubmit]:hover {
   font-size: 0.5em;
   font-weight: normal;
 }
+
+
+/* ------ Display cart style ------*/
+
+.displayCart-div {
+  color: black;
+}
+
+.displayCart-div img {
+  height: 200px;
+  border: 1px solid lightgray;
+  width: auto;
+  text-align: left;
+}
+
+.displayCart-item {
+  padding: 20px;
+}
+
+.displayCart-image {
+}
+
+.displayCart-text {
+  font-weight: bold;
+  padding-bottom: 10px;
+  border-bottom: 2px solid gray;
+}
+
+.total-container {
+  font-size: 1.6em;
+  font-weight: bold;
+  color: black;
+  padding: 20px;
+}
