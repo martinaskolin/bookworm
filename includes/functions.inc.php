@@ -67,6 +67,15 @@
   }
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  // Remove From Cart: Removes one item from cart
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  function removeFromCart($conn, $id, $uid){
+    $conn->query("DELETE FROM cart_item WHERE pid = $id AND uid = $uid LIMIT 1;");
+    header("location: /bookworm/pages/cart?status=ITEM_REMOVED");
+    exit();
+  }
+
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // Fetch cart: returns all products a user has in their cart
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   function fetch_cart($conn, $uid) {
@@ -75,7 +84,7 @@
     mysqli_stmt_prepare($stmt, $sql);
 
     if (!mysqli_stmt_prepare($stmt, $sql)) {
-      header("location: /bookworm/pages/checkout?error=STMT_FAILED");
+      header("location: /bookworm/pages/cart?error=STMT_FAILED");
       exit();
     }
 
@@ -204,7 +213,7 @@
   // Login User: Starts a session given correct email and pwd
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   function loginUser($conn, $email, $pwd) {
-    $userArr = fetch_user($conn, null ,$email);
+    $userArr = fetch_user($conn, NULL, $email);
 
     // Wrong username
     if ($userArr == false) {
