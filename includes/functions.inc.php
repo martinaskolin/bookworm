@@ -66,6 +66,14 @@
     $conn->query("INSERT INTO cart_item(pid, uid) VALUES (". $pid . ", " . $uid . ")");
   }
 
+function addToCart2($conn, $pid, $uid){
+  $sql = "INSERT INTO cart_item(pid, uid) VALUES ('. $pid . ', ' . $uid . ');";
+  if (mysqli_query($conn, $sql)) {
+    return true; }
+    else {
+      return false;
+    }
+  }
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // Fetch cart: returns all products a user has in their cart
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -75,7 +83,7 @@
     mysqli_stmt_prepare($stmt, $sql);
 
     if (!mysqli_stmt_prepare($stmt, $sql)) {
-      header("location: /bookworm/pages/checkout?error=STMT_FAILED");
+      header("location: /bookworm/pages/profile?error=STMT_FAILED");
       exit();
     }
 

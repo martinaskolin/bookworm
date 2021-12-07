@@ -15,7 +15,7 @@
 
     <?php
 
-    if (isset($_SESSION["id"])){
+    if (isset($_SESSION["uid"])){
       //echo "<h1> Came to false statement </h1>";
       echo "<h1> Shopping Cart </h1>";
       $sql = "SELECT * FROM `cart_item`;";
@@ -24,6 +24,17 @@
       if (mysqli_num_rows($result) > 0) {
         while($row = mysqli_fetch_assoc($result)){
           echo "<p> Made it here </p> ";
+
+          $sql1 = "SELECT p.* FROM cart_item ci, product p WHERE p.id = ci.pid;";
+          $res = mysqli_query($conn, $sql1);
+          if (mysqli_num_rows($res)>0){
+          while($r = mysqli_fetch_assoc($res)){
+            echo "<p> Product id is: " . $r['id'] . " product name is " . $r['name'] . " </p>";
+          }
+        }
+          else{
+            echo "<p> I fucked up </p>";
+          }
         }
       }
       else {
