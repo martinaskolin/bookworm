@@ -22,7 +22,6 @@
         <p>Checkout</p>
       </div>
 
-      <!-- MOVE TO A SEPARATE FUNCTION IN "FUNCTIONS" -->
       <div class="displayCart-div"><?php
         displayCart($conn, $_SESSION['uid']);
       ?></div>
