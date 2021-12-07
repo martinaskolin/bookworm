@@ -23,12 +23,16 @@
       if (mysqli_num_rows($result) > 0) {
         $sum = 0;
         while($item = mysqli_fetch_assoc($result)){
-        echo "<p> Product id is: " . $item['id'] . " product name is " . $item['name'] . " " . $item['price'] . " kr </p>";
+        echo "<p>" . $item['name'] . " " . $item['price'] . " kr </p>";
+        echo "<a href='/bookworm/includes/removeFromCart.inc.php?id=" . $item['id'] . "' target='_blank'> <p> Remove </p></a>";
+        //echo gettype($_SESSION["uid"]);
+        //echo "<button onclick='testPrint()'>Click me</button>";
         $sum = $sum + $item['price'];
       }
       echo "<p> Total cost is: "  . $sum . " kr </p>";
 
-      }
+
+    }
 
       else {
         echo "<p> No items in your cart yet </p>";
@@ -38,7 +42,10 @@
             echo "<p> Please log in to see your cart </p>";
 
     }
+
     ?>
+
+
 
   </body>
   </html>

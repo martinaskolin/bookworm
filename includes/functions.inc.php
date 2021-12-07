@@ -330,4 +330,17 @@
     }
   }
 
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  // Remove item from cart
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  function removeFromCart($conn, $id, $uid){
+    $sql = "DELETE FROM `cart_item` WHERE pid = $id AND user_id = $uid LIMIT 1;";
+    $result = mysqli_query($conn, $sql);
+
+  }
+
+  function testPrint(){
+    echo "<p> Hello World! </p>";
+  }
+
  ?>
