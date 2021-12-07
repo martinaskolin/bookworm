@@ -63,16 +63,7 @@
   // Add to Cart: Adds pid and cid as new entry into cart_item (NOT PREP. STMT.)
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   function add_to_cart($conn, $pid, $uid) {
-    $conn->query("INSERT INTO cart_item(pid, uid) VALUES (". $pid . ", " . $uid . ")");
-  }
-
-function addToCart2($conn, $pid, $uid){
-  $sql = "INSERT INTO cart_item(pid, uid) VALUES ('. $pid . ', ' . $uid . ');";
-  if (mysqli_query($conn, $sql)) {
-    return true; }
-    else {
-      return false;
-    }
+    $conn->query("INSERT INTO cart_item(pid, user_id) VALUES (". $pid . ", " . $uid . ")");
   }
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // Fetch cart: returns all products a user has in their cart
