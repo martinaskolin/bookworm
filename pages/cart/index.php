@@ -7,6 +7,8 @@
   </head>
   <body>
 
+    <?php include_once '../../includes/header.inc.php'; ?>
+
     <!-- Check for URL manipulation -->
     <?php
       if(!isset($_SERVER['HTTP_REFERER'])) {
@@ -15,32 +17,59 @@
       }
     ?>
 
-    <?php include_once '../../includes/header.inc.php'; ?>
-
+    <!-- Disable page when not logged in -->
     <?php
-      echo "<h1> Shopping Cart </h1>";
-
-      $result = fetch_cart($conn, $_SESSION['uid']);
-
-      if (mysqli_num_rows($result) > 0) {
-        $sum = 0;
-        while($item = mysqli_fetch_assoc($result)){
-        echo "<p>" . $item['name'] . " " . $item['price'] . " kr </p>";
-        echo "<a href='/bookworm/includes/removefromcart.inc.php?id=" . $item['id'] . "'> <p> Remove </p></a>";
-        //echo gettype($_SESSION["uid"]);
-        //echo "<button onclick='testPrint()'>Click me</button>";
-        $sum = $sum + $item['price'];
+      if(!isset($_SESSION['uid'])) {
+        header('location: /bookworm/');
+        exit();
       }
-      echo "<p> Total cost is: "  . $sum . " kr </p>";
-
-
-    }
-
-      else {
-        echo "<p> No items in your cart yet </p>";
-      }
-
     ?>
+
+    <div class="inputContainer-div">
+      <div class="inputContainer-header">
+        <p>Shopping Cart</p>
+      </div>
+
+      <div class="displayCart-div">
+        <?php
+          $cart = fetch_cart($conn, $_SESSION['uid']);
+
+          if (mysqli_num_rows($cart) > 0) {
+            $sum = 0;
+            while($item = mysqli_fetch_assoc($cart)){
+              $pid = $item["id"];
+              $result = fetch_products_in_cart($conn, $pid);
+              $product = $result->fetch_assoc();
+              $default_img = '/bookworm/resources/images/img_missing.jpg';
+              $add_exist = ($product['img_dir'] != null);
+              $sum = $sum + $product['price'];
+
+              // Print item in cart
+              echo "<div class='displayCart-item'>";
+              echo "<div class='displayCart-image'>";
+              if ($add_exist) { echo "<img src='" . $product['img_dir'] . "'>"; } // Print Product Image
+              else { echo "<img src='" . $default_img . "'>"; }                // Print Default Image
+              echo "</div>";
+              echo "<div class='displayCart-text'>";
+              echo "<p>" . $product['name'] . "</p><p>Price: " . $product['price'] . "</p>";
+              echo "<a href='/bookworm/includes/removefromcart.inc.php?id=" . $item['id'] . "'> <p> Remove </p></a>";
+              echo "</div>";
+              echo "</div>";
+            }
+            echo "<div class='total-container'>Total Cost: " . $sum . "</div>";
+
+            // Display "Checkout" button, but only if cart is NOT Empty
+            echo "<div class='inputContainer-form'>";
+            echo "<a href='../checkout'><button type='inputSubmit' name='submit'>Go To Checkout</button></a>";
+            echo "</div>";
+          }
+          else {
+            echo "<p> Cart is empty </p>";
+          }
+        ?>
+      </div>
+
+    </div>
 
   </body>
 </html>

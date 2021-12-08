@@ -47,14 +47,15 @@ body {
 }
 
 .product-container div{
-  /*border-radius: 25px;
+/*  border-radius: 25px;
   background-color: red;*/
   padding: 10px;
   text-align: center;
 }
 
 .product-container img {
-  width: 7vw;
+  height: 200px;
+  width: auto;
 }
 
 .product-container a {
