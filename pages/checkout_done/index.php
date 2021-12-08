@@ -7,6 +7,8 @@
   </head>
   <body>
 
+    <?php include_once '../../includes/header.inc.php'; ?>
+
     <!-- Check for URL manipulation -->
     <?php
       if(!isset($_SERVER['HTTP_REFERER'])){
@@ -15,7 +17,13 @@
       }
     ?>
 
-    <?php include_once '../../includes/header.inc.php'; ?>
+    <!-- Disable page when not logged in -->
+    <?php
+      if(!isset($_SESSION['uid'])) {
+        header('location: /bookworm/');
+        exit();
+      }
+    ?>
 
     <div class="inputContainer-div">
       <div class="inputContainer-header">

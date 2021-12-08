@@ -7,15 +7,23 @@
   </head>
   <body>
 
-    <!-- Check for URL manipulation, UNCOMMENT WHEN CART IS DONE!!! -->
+    <?php include_once '../../includes/header.inc.php'; ?>
+
+    <!-- Check for URL manipulation -->
     <?php
-    /*  if(!isset($_SERVER['HTTP_REFERER'])) {
+      if(!isset($_SERVER['HTTP_REFERER'])) {
         header('location: /bookworm/');
         exit();
-      } */
+      }
     ?>
 
-    <?php include_once '../../includes/header.inc.php'; ?>
+    <!-- Disable page when not logged in -->
+    <?php
+      if(!isset($_SESSION['uid'])) {
+        header('location: /bookworm/');
+        exit();
+      }
+    ?>
 
     <div class="inputContainer-div">
       <div class="inputContainer-header">
@@ -23,7 +31,28 @@
       </div>
 
       <div class="displayCart-div"><?php
-        displayCart($conn, $_SESSION['uid']);
+        $cart = fetch_cart($conn, $_SESSION['uid']);
+        $sum = 0;
+        if ($cart->num_rows > 0) {
+          while ($item = $cart->fetch_assoc()) {
+            $pid = $item["id"];
+            $result = fetch_products_in_cart($conn, $pid);
+            $product = $result->fetch_assoc();
+            $default_img = '/bookworm/resources/images/img_missing.jpg';
+            $add_exist = ($product['img_dir'] != null);
+            $sum = $sum + $product['price'];
+
+            // Print item in cart
+            echo "<div class='displayCart-item'>";
+            echo "<div class='displayCart-image'>";
+            if ($add_exist) { echo "<img src='" . $product['img_dir'] . "'>"; } // Print Product Image
+            else { echo "<img src='" . $default_img . "'>"; }                // Print Default Image
+            echo "</div>";
+            echo "<div class='displayCart-text'><p>" . $product['name'] . "</p><p>Price: " . $product['price'] . "</p></div>";
+            echo "</div>";
+          }
+          echo "<div class='total-container'>Total Cost: " . $sum . "</div>";
+        }
       ?></div>
 
       <div class="inputContainer-form">
