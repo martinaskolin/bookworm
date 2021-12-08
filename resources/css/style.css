@@ -47,18 +47,15 @@ body {
 }
 
 .product-container div{
-/*  border-radius: 25px;
-  background-color: red;*/
   padding: 10px;
   text-align: center;
 }
 
 .product-container img {
-  height: 200px;
-  width: auto;
+  width: 60%;
 }
 
-.product-container a {
+.product-container .button {
   text-decoration: none;
   color: white;
   background-color: red;
@@ -67,41 +64,22 @@ body {
   padding-bottom: 10px;
 }
 
-.product-container a:hover {
+.product-container .button:hover {
   background-color: #c40e0e;
 }
 
-/* --------------- Form --------------- */
-
-/*form {
+.product-container li {
+  list-style: none;
   text-align: center;
-  margin-top: 2vw;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 
-form input {
-  background-color: #525252;
-  border: none;
-  width: 400px;
-  padding: 10px;
-  margin-top: 7px;
+.product-container li a {
   color: white;
-  font-size: 1em;
+  text-decoration: none;
+  font-weight: normal;
 }
-
-form input::placeholder {
-  font-style: italic;
-}
-
-form button {
-  width: 420px;
-  padding: 10px;
-  margin-top: 7px;
-  background-color: red;
-  border: none;
-  color: white;
-  font-size: 1em;
-}*/
-
 
 /* ------ Input forms such as login, signup, profile and checkout ------*/
 

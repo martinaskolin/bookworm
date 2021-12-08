@@ -34,12 +34,12 @@
 
           // Print product
           echo "<div>";
-          if ($add_exist) { echo "<img src='" . $product['img_dir'] . "'>"; } // Print Product Image
-          else { echo "<img src='" . $default_img . "'>"; }                   // Print Default Image
-          echo "<p>" . $product['name'] . "</p>";
+          if ($add_exist) { echo "<a href='/bookworm/pages/product/?id=". $product['id'] ."'><img src='" . $product['img_dir'] . "'></a>"; } // Print Product Image
+          else { echo "<a href='/bookworm/pages/product/?id=". $product['id'] ."'><img src='" . $default_img . "'></a>"; }                   // Print Default Image
+          echo "<li><a href='/bookworm/pages/product/?id=". $product['id'] ."'>" . $product['name'] . "</a></li>";
 
           if ($is_admin) { echo "<a href='/bookworm/pages/edit/index.php?id=" . $product['id'] . "'> Edit <i class='bi-pencil-square'></i> </a>"; } // Admin edit
-          else { echo "<a href='/bookworm/includes/addtocart.inc.php?id=" . $product['id'] . "'> " . $product['price'] . " <i class='bi-bag-fill'></i> </a>"; } // Customer buy
+          else { echo "<a class='button' href='/bookworm/includes/addtocart.inc.php?id=" . $product['id'] . "'> " . $product['price'] . " <i class='bi-bag-fill'></i> </a>"; } // Customer buy
 
           echo "</div>";
 
