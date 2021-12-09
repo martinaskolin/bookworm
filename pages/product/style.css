@@ -1,4 +1,68 @@
-.grid-container {
+.main-container {
+  display: grid;
+  width: auto;
+  grid-template-columns: 1fr 3fr;
+  grid-template-rows: auto auto auto;
+  grid-template-areas:
+    "img info"
+    "stats stats"
+    "review review";
+  grid-gap: 20px;
+  margin: 40px;
+  margin-left: 20vw;
+  margin-right: 20vw;
+
+  background-color: blue;
+}
+
+.main-container h1 {
+  margin: 0px;
+}
+
+.main-container h3 {
+  margin: 0px;
+  font-style: italic;
+}
+
+.main-container img {
+  width: 100%;
+}
+
+.main-container > #img {
+  grid-area: img;
+}
+
+.main-container > #info {
+  grid-area: info;
+  text-align: left;
+}
+
+/*.main-container > #add {
+  grid-area: add;
+  display: block;
+  width: 100%;
+}
+
+#add p {
+  display: inline-block;
+  margin-right: 40px;
+  float: left;
+}
+
+#add a {
+ text-decoration: none;
+ color: white;
+ background-color: red;
+ display: block;
+ text-align: center;
+ width: 200px;
+ padding-top: 20px;
+ padding-bottom: 20px;
+ display: inline-block;
+ float: right;
+}*/
+
+/*.grid-container {
   display: grid;
   grid-template-columns: 300px auto;
   grid-template-rows: auto 60px auto;
@@ -39,7 +103,7 @@
 .grid-container p {
   display: inline-block;
   margin-right: 20px;
-}
+} */
 
 /*.review-container {
   grid-column-start: 1;

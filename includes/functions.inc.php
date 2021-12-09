@@ -52,8 +52,9 @@
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // Fetch Product: Returns all product and additional product information
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  function fetch_products($conn) {
-    $sql = "SELECT * FROM product LEFT JOIN product_add ON product.id = product_add.pid;"; // change later to filter products
+  function fetch_products($conn, $id) {
+    if ($id == null) { $sql = "SELECT * FROM product LEFT JOIN product_add ON product.id = product_add.pid;"; }
+    else { $sql = "SELECT * FROM product LEFT JOIN product_add ON product.id = product_add.pid WHERE product.id = ". $id . ";";}
     $result = $conn->query($sql);
 
     return $result;

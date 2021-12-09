@@ -1,0 +1,42 @@
+.product-container {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(200px, 1fr));
+  grid-column-gap: 10px;
+  grid-row-gap: 10px;
+  padding: 10px;
+}
+
+.product-container div{
+  padding: 10px;
+  text-align: center;
+}
+
+.product-container img {
+  height: 250px;
+}
+
+.product-container .button {
+  text-decoration: none;
+  color: white;
+  background-color: red;
+  display: block;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.product-container .button:hover {
+  background-color: #c40e0e;
+}
+
+.product-container li {
+  list-style: none;
+  text-align: center;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.product-container li a {
+  color: white;
+  text-decoration: none;
+  font-weight: normal;
+}

@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="style.css">
     <title></title>
   </head>
   <body>
@@ -24,7 +25,7 @@
       // $is_admin = ($is_signedin && $user['admin'] == 1); (Defined in header.inc.php)
       $default_img = '/bookworm/resources/images/img_missing.jpg';
 
-      $result = fetch_products($conn);
+      $result = fetch_products($conn, null);
 
       if ($result->num_rows > 0) {
         while ($product = $result->fetch_assoc()) {
@@ -38,7 +39,7 @@
           else { echo "<a href='/bookworm/pages/product/?id=". $product['id'] ."'><img src='" . $default_img . "'></a>"; }                   // Print Default Image
           echo "<li><a href='/bookworm/pages/product/?id=". $product['id'] ."'>" . $product['name'] . "</a></li>";
 
-          if ($is_admin) { echo "<a href='/bookworm/pages/edit/index.php?id=" . $product['id'] . "'> Edit <i class='bi-pencil-square'></i> </a>"; } // Admin edit
+          if ($is_admin) { echo "<a class='button' href='/bookworm/pages/edit/index.php?id=" . $product['id'] . "'> Edit <i class='bi-pencil-square'></i> </a>"; } // Admin edit
           else { echo "<a class='button' href='/bookworm/includes/addtocart.inc.php?id=" . $product['id'] . "'> " . $product['price'] . " <i class='bi-bag-fill'></i> </a>"; } // Customer buy
 
           echo "</div>";

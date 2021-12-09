@@ -18,13 +18,15 @@
       if ($product = $result->fetch_assoc()) {
         $add_exist = $product['img_dir'] != null;
 
+        echo "<div class='main-container'>";
         // Image
-        echo "<div class='grid-container'>";
+        echo "<div id='img'>";
         if ($add_exist) { echo "<img src='" . $product['img_dir'] . "'>"; } // Print Product Image
         else { echo "<img src='" . $default_img . "'>"; }                   // Print Default Image
+        echo "</div>";
 
         // Title, author, description
-        echo "<div>";
+        echo "<div id='info'>";
         echo "<h1>". $product['name'] ."</h1>";
         echo "<h3>". $product['author'] ."</h3>";
         if ($add_exist) { echo "<p> ". $product['des_dir'] ." </p>"; }
@@ -32,12 +34,12 @@
         echo "</div>";
 
         // ISBN, price, stock, add button
-        echo "<div>";
+        /*echo "<div id='add'>";
         echo "<p>ISBN: ". $product['ISBN'] ."</p>";
         echo "<p>Price: ". $product['price'] ."</p>";
         echo "<p>Stock: ". $product['stock'] ."</p>";
         echo "<a href='/bookworm/includes/addtocart.inc.php?id=" . $product['id'] . "' target='_blank'> Add <i class='bi-bag-fill'></i> </a>";
-        echo "</div>";
+        echo "</div>";*/
 
         echo "</div>";
       }
