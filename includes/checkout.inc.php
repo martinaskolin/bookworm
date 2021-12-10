@@ -21,7 +21,7 @@
   require_once "functions.inc.php";
 
   // Error checks
-  if (checkEmpty(array($address)) !== false) { header("location: ../pages/checkout?error=EMPTY_INPUT"); exit(); }
+  if (checkEmpty(array($fname, $lname, $address, $zipcode, $city, $country, $email)) !== false) { header("location: ../pages/checkout?error=EMPTY_INPUT"); exit(); }
   if (checkEmail($email) !== false) { header("location: /bookworm/pages/checkout?error=INVALID_EMAIL"); exit(); }
   $cart = fetch_cart($conn, $_SESSION["uid"]);
   if (!$cart->fetch_assoc()) {
