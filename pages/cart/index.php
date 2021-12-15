@@ -53,7 +53,7 @@
               echo "</div>";
               echo "<div class='displayCart-text'>";
               echo "<p>" . $product['name'] . "</p><p>Price: " . $product['price'] . "</p>";
-              echo "<a href='/bookworm/includes/removefromcart.inc.php?id=" . $item['id'] . "'> <p> Remove </p></a>";
+              echo "<a class='remove-link' href='/bookworm/includes/removefromcart.inc.php?id=" . $item['id'] . "'> <p> Remove </p></a>";
               echo "</div>";
               echo "</div>";
             }

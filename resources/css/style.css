@@ -68,3 +68,11 @@ body {
   color: black;
   padding: 20px;
 }
+
+.remove-link {
+  color: red;
+}
+
+.remove-link:visited {
+  color: red;
+}
