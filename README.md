@@ -3,6 +3,7 @@ This project is a part of the database course D0018E at Luleå University of Tec
 
 The website provides the following structure:
 - A page for browsing books in stock and placing books in the cart
+  - When clicking on a book additional information such as reviews are displayed
 - A signup page were a user can create an account with name, email and encrypted password
 - A login page were a user can login if they have created an account
 - A profile page were a logged in user can edit their account information
