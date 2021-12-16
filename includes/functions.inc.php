@@ -192,7 +192,7 @@
         if ($fileError === 0) {
           if ($fileSize < 1000000) {
             $fileNameNew = uniqid('', true) . "." . $fileActualExt;
-            $fileDestination = '../resources/images/' . $fileName;
+            $fileDestination = '../resources/prod/img/' . $fileName;
             move_uploaded_file($fileTmpName, $fileDestination);
 
             // Place file in database
@@ -206,8 +206,11 @@
                 exit();
               }
 
-              $imageFolder = "/bookworm/resources/images/" . $fileName;
+              $imageFolder = "/bookworm/resources/prod/img/" . $fileName;
+
+              //REMOVE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
               $text = "hello";
+
               mysqli_stmt_bind_param($stmt, "iss", $product['id'], $imageFolder, $text);
               mysqli_stmt_execute($stmt);
               mysqli_stmt_close($stmt);
