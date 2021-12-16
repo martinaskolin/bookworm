@@ -72,6 +72,13 @@
     return $result;
   }
 
+  function fetch_reviews($conn, $pid) {
+    $sql = "SELECT * FROM review WHERE review.pid = ". $pid .";";
+    $result = $conn->query($sql);
+
+    return $result;
+  }
+
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // Fetch Products in Cart: Returns all product and additional product information from a specific user's cart
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

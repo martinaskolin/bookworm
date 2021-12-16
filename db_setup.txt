@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS `bookworm`.`user` (
   `pwd_sha256` BINARY(64) NOT NULL,
   `pwd_salt` BINARY(32) NOT NULL,
   `admin` TINYINT NOT NULL,
-  PRIMARY KEY (`id`))
+  PRIMARY KEY (`id`)
 ENGINE = InnoDB;
 
 
@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS `bookworm`.`product` (
   `price` INT NOT NULL,
   `name` VARCHAR(64) NOT NULL,
   `author` VARCHAR(64) NOT NULL,
-  `ISBN` INT NOT NULL,
+  `ISBN` VARCHAR(13) NOT NULL,
   `stock` INT NOT NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB;
@@ -48,14 +48,9 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `bookworm`.`product_add` (
   `pid` INT NOT NULL,
-  `img_dir` VARCHAR(64) NULL,
-  `des_dir` VARCHAR(64) NULL,
-  PRIMARY KEY (`pid`),
-  CONSTRAINT `fk_products_add_products`
-    FOREIGN KEY (`pid`)
-    REFERENCES `bookworm`.`product` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+  `img_dir` VARCHAR(64) NOT NULL,
+  `des_dir` VARCHAR(64) NOT NULL,
+  PRIMARY KEY (`pid`))
 ENGINE = InnoDB;
 
 
@@ -65,35 +60,27 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `bookworm`.`cart_item` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `pid` INT NOT NULL,
-  `user_id` INT NOT NULL,
-  PRIMARY KEY (`id`),
-  CONSTRAINT `fk_carts_products1`
-    FOREIGN KEY (`pid`)
-    REFERENCES `bookworm`.`product` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_cart_item_user1`
-    FOREIGN KEY (`user_id`)
-    REFERENCES `bookworm`.`user` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+  `uid` INT NOT NULL,
+  PRIMARY KEY (`id`))
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `bookworm`.`order`
+-- Table `bookworm`.`order_parent`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `bookworm`.`order` (
+CREATE TABLE IF NOT EXISTS `bookworm`.`order_parent` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `address` VARCHAR(64) NOT NULL,
-  `status` VARCHAR(10) NOT NULL,
   `uid` INT NOT NULL,
-  PRIMARY KEY (`id`),
-  CONSTRAINT `fk_orders_users1`
-    FOREIGN KEY (`uid`)
-    REFERENCES `bookworm`.`user` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+  `status` VARCHAR(10) NOT NULL,
+  `date` TIMESTAMP NOT NULL,
+  `email` VARCHAR(320) NOT NULL,
+  `fname` VARCHAR(45) NOT NULL,
+  `lname` VARCHAR(45) NOT NULL,
+  `address` VARCHAR(64) NOT NULL,
+  `zip_code` VARCHAR(5) NOT NULL,
+  `city` VARCHAR(45) NOT NULL,
+  `country` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`id`))
 ENGINE = InnoDB;
 
 
@@ -103,13 +90,10 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `bookworm`.`review` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `pid` INT NOT NULL,
-  `rating` INT NOT NULL,
-  PRIMARY KEY (`id`),
-  CONSTRAINT `fk_review_product1`
-    FOREIGN KEY (`pid`)
-    REFERENCES `bookworm`.`product` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+  `uid` INT NOT NULL,
+  `rating` INT(3) NOT NULL,
+  `des_dir` VARCHAR(64) NULL,
+  PRIMARY KEY (`id`))
 ENGINE = InnoDB;
 
 
@@ -119,37 +103,13 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `bookworm`.`order_item` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `oid` INT NOT NULL,
-  `pid` INT NOT NULL,
   `price` INT NOT NULL,
-  PRIMARY KEY (`id`),
-  CONSTRAINT `fk_order_item_product1`
-    FOREIGN KEY (`pid`)
-    REFERENCES `bookworm`.`product` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_order_item_order1`
-    FOREIGN KEY (`oid`)
-    REFERENCES `bookworm`.`order` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `bookworm`.`review_add`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `bookworm`.`review_add` (
-  `rid` INT NOT NULL,
-  `des` VARCHAR(256) NOT NULL,
-  PRIMARY KEY (`rid`),
-  CONSTRAINT `fk_review_add_review1`
-    FOREIGN KEY (`rid`)
-    REFERENCES `bookworm`.`review` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+  `ISBN` VARCHAR(13) NOT NULL,
+  PRIMARY KEY (`id`))
 ENGINE = InnoDB;
 
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
