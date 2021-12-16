@@ -50,6 +50,18 @@
   }
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  // Check For Existing ISBN: returns true if ISBN (book) already is in the table
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  function checkForExistingISBN($conn, $ISBN) {
+    $sql = "SELECT ISBN FROM product WHERE ISBN=$ISBN;";
+    $result = $conn->query($sql);
+    if ($result->fetch_assoc()) {
+      return true;
+    }
+    return false;
+  }
+
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // Fetch Product: Returns all product and additional product information
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   function fetch_products($conn, $id) {
@@ -130,7 +142,7 @@
   // Fetch emails: returns all email addresses in the user table
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   function fetch_emails($conn) {
-    $sql = "SELECT email FROM user";
+    $sql = "SELECT email FROM user;";
     $stmt = mysqli_stmt_init($conn);
 
     if (!mysqli_stmt_prepare($stmt, $sql)) {
@@ -144,6 +156,66 @@
 
     if ($col = mysqli_fetch_assoc($result)) { return $col;}
     else { return false; }
+  }
+
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  // Create New Item: Adds a new item to the store
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  function createNewItem($conn, $book, $author, $ISBN, $price, $stock, $file, $fileName, $fileTmpName, $fileSize, $fileError) {
+    $sql = "INSERT INTO product (name, author, ISBN, price, stock) VALUES (?, ?, ?, ?, ?);";
+    $stmt = mysqli_stmt_init($conn);
+
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+      header("location: /bookworm/pages/add_item?error=STMT_FAILED");
+      exit();
+    }
+
+    mysqli_stmt_bind_param($stmt, "sssii", $book, $author, $ISBN, $price, $stock);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+
+    // Add image if it exists
+    if ($file != null) {
+      $fileExt = explode('.', $fileName);
+      $fileActualExt = strtolower(end($fileExt));
+
+      $allowed = array('jpg', 'jpeg', 'png');
+
+      if (in_array($fileActualExt, $allowed)) {
+        if ($fileError === 0) {
+          if ($fileSize < 1000000) {
+            $fileNameNew = uniqid('', true) . "." . $fileActualExt;
+            $fileDestination = '../resources/images/' . $fileName;
+            move_uploaded_file($fileTmpName, $fileDestination);
+
+            // Place file in database
+            $result = $conn->query("SELECT id FROM product WHERE ISBN=$ISBN;");
+            if ($product = $result->fetch_assoc()) {
+              $sql = "INSERT INTO product_add VALUES (?, ?, ?);";
+              $stmt = mysqli_stmt_init($conn);
+
+              if (!mysqli_stmt_prepare($stmt, $sql)) {
+                header("location: /bookworm/pages/add_item?error=STMT_FAILED");
+                exit();
+              }
+
+              $imageFolder = "/bookworm/resources/images/" . $fileName;
+              $text = "hello";
+              mysqli_stmt_bind_param($stmt, "iss", $product['id'], $imageFolder, $text);
+              mysqli_stmt_execute($stmt);
+              mysqli_stmt_close($stmt);
+            }
+          }
+          else { header("location: /bookworm/pages/add_item?error=FILE_TOO_BIG"); exit(); }
+        }
+        else { header("location: /bookworm/pages/add_item?error=UPLOAD_ERROR"); exit(); }
+      }
+      else { header("location: /bookworm/pages/add_item?error=FILETYPE_NOT_ALLOWED"); exit(); }
+    }
+
+    header("location: /bookworm/pages/add_item?error=none");
+    exit();
+
   }
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -1,7 +1,6 @@
 .inputContainer-div {
   margin: auto;
   margin-top: 5%;
-  margin-bottom: 10%;
   width: 500px;
   border-radius: 15px;
   background: white;
@@ -23,7 +22,7 @@
   text-align: center;
 }
 
-input[type=inputText], [type=password] {
+input[type=inputText], [type=password], [type=number] {
   width: 50%;
   padding: 10px 10px;
   margin: 8px 0;
@@ -46,6 +45,27 @@ button[type=inputSubmit] {
 }
 
 button[type=inputSubmit]:hover {
+  background-color: #15947b;
+}
+
+input[type=file] {
+  display: none;
+}
+
+.imageUpload {
+  width: 50%;
+  background-color: #1ABC9C;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: normal;
+  font-size: 0.8em;
+}
+
+.imageUpload:hover {
   background-color: #15947b;
 }
 

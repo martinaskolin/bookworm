@@ -39,7 +39,7 @@
           else { echo "<a href='/bookworm/pages/product/?id=". $product['id'] ."'><img src='" . $default_img . "'></a>"; }                   // Print Default Image
           echo "<li><a href='/bookworm/pages/product/?id=". $product['id'] ."'>" . $product['name'] . "</a></li>";
 
-          if ($is_admin) { echo "<a class='button' href='/bookworm/pages/edit/index.php?id=" . $product['id'] . "'> Edit <i class='bi-pencil-square'></i> </a>"; } // Admin edit
+          if ($is_admin) { echo "<a class='button' href='/bookworm/pages/edit_item/index.php?id=" . $product['id'] . "'> Edit <i class='bi-pencil-square'></i> </a>"; } // Admin edit
           else { echo "<a class='button' href='/bookworm/includes/addtocart.inc.php?id=" . $product['id'] . "'> " . $product['price'] . " <i class='bi-bag-fill'></i> </a>"; } // Customer buy
 
           echo "</div>";

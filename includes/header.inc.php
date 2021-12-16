@@ -43,6 +43,7 @@
           // Administrator
           else {
             echo "<li> <a href='/bookworm/includes/logout.inc.php'><i class='bi-box-arrow-left'></i> Log Out</a> </li>";
+            echo "<li> <a href='/bookworm/pages/add_item'><i class='bi-file-plus-fill'></i> Add Book</a></li>";
             echo "<li> <a href='/bookworm/pages/profile'><i class='bi-person-circle'></i> " . $user['fname'] . " " . $user['lname'] . " [Admin]</a> </li>";
           }
         }
