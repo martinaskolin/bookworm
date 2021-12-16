@@ -7,7 +7,7 @@
     <title></title>
   </head>
   <body>
-
+    <?php include_once $_SERVER['DOCUMENT_ROOT'] . '/bookworm/includes/constants.inc.php'; ?>
     <?php include_once $_SERVER['DOCUMENT_ROOT'] . '/bookworm/includes/functions.inc.php'; ?>
     <?php include_once $_SERVER['DOCUMENT_ROOT'] . '/bookworm/includes/header.inc.php'; ?>
 
@@ -23,7 +23,6 @@
       // Product independent Variables
       // $is_signedin = isset($_SESSION["uid"]); (Defined in header.inc.php)
       // $is_admin = ($is_signedin && $user['admin'] == 1); (Defined in header.inc.php)
-      $default_img = '/bookworm/resources/images/img_missing.jpg';
 
       $result = fetch_products($conn, null);
 
@@ -35,8 +34,10 @@
 
           // Print product
           echo "<div>";
-          if ($add_exist) { echo "<a href='/bookworm/pages/product/?id=". $product['id'] ."'><img src='" . $product['img_dir'] . "'></a>"; } // Print Product Image
-          else { echo "<a href='/bookworm/pages/product/?id=". $product['id'] ."'><img src='" . $default_img . "'></a>"; }                   // Print Default Image
+          if ($product['img_dir'] != null && file_exists($_SERVER['DOCUMENT_ROOT'] . $product['img_dir'])) {
+             echo "<a href='/bookworm/pages/product/?id=". $product['id'] ."'><img src='" . $product['img_dir'] . "'></a>";
+          }
+          else { echo "<a href='/bookworm/pages/product/?id=". $product['id'] ."'><img src='" . $dir_defaultimg . "'></a>"; }
           echo "<li><a href='/bookworm/pages/product/?id=". $product['id'] ."'>" . $product['name'] . "</a></li>";
 
           if ($is_admin) { echo "<a class='button' href='/bookworm/pages/edit/index.php?id=" . $product['id'] . "'> Edit <i class='bi-pencil-square'></i> </a>"; } // Admin edit
