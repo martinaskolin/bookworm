@@ -168,7 +168,7 @@
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // Create New Item: Adds a new item to the store
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  function createNewItem($conn, $book, $author, $ISBN, $price, $stock, $file, $fileName, $fileTmpName, $fileSize, $fileError) {
+  function createNewItem($conn, $book, $author, $ISBN, $price, $stock) {
     $sql = "INSERT INTO product (name, author, ISBN, price, stock) VALUES (?, ?, ?, ?, ?);";
     $stmt = mysqli_stmt_init($conn);
 
@@ -180,52 +180,102 @@
     mysqli_stmt_bind_param($stmt, "sssii", $book, $author, $ISBN, $price, $stock);
     mysqli_stmt_execute($stmt);
     mysqli_stmt_close($stmt);
+  }
 
-    // Add image if it exists
-    if ($file != null) {
-      $fileExt = explode('.', $fileName);
-      $fileActualExt = strtolower(end($fileExt));
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  // Add Image: Adds an image to a book identified by ISBN
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  function addImage($conn, $ISBN, $file, $fileName, $fileTmpName, $fileSize, $fileError) {
+    $fileExt = explode('.', $fileName);
+    $fileActualExt = strtolower(end($fileExt));
 
-      $allowed = array('jpg', 'jpeg', 'png');
+    $allowed = array('jpg', 'jpeg', 'png');
 
-      if (in_array($fileActualExt, $allowed)) {
-        if ($fileError === 0) {
-          if ($fileSize < 1000000) {
-            $fileNameNew = uniqid('', true) . "." . $fileActualExt;
-            $fileDestination = '../resources/prod/img/' . $fileName;
-            move_uploaded_file($fileTmpName, $fileDestination);
+    if (in_array($fileActualExt, $allowed)) {
+      if ($fileError === 0) {
+        if ($fileSize < 1000000) {
+          $fileNameNew = uniqid('', true) . "." . $fileActualExt;
+          $fileDestination = '../resources/prod/img/' . $fileName;
+          move_uploaded_file($fileTmpName, $fileDestination);
 
-            // Place file in database
-            $result = $conn->query("SELECT id FROM product WHERE ISBN=$ISBN;");
-            if ($product = $result->fetch_assoc()) {
-              $sql = "INSERT INTO product_add VALUES (?, ?, ?);";
-              $stmt = mysqli_stmt_init($conn);
+          // Place file in database
+          $result = $conn->query("SELECT id FROM product WHERE ISBN=$ISBN;");
+          if ($product = $result->fetch_assoc()) {
+            $sql = "INSERT INTO product_add VALUES (?, ?, ?);";
+            $stmt = mysqli_stmt_init($conn);
 
-              if (!mysqli_stmt_prepare($stmt, $sql)) {
-                header("location: /bookworm/pages/add_item?error=STMT_FAILED");
-                exit();
-              }
-
-              $imageFolder = "/bookworm/resources/prod/img/" . $fileName;
-
-              //REMOVE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-              $text = "hello";
-
-              mysqli_stmt_bind_param($stmt, "iss", $product['id'], $imageFolder, $text);
-              mysqli_stmt_execute($stmt);
-              mysqli_stmt_close($stmt);
+            if (!mysqli_stmt_prepare($stmt, $sql)) {
+              header("location: /bookworm/pages/add_item?error=STMT_FAILED");
+              exit();
             }
+
+            $imageDir = "/bookworm/resources/prod/img/" . $fileName;
+
+            $text = "No description.";
+
+            mysqli_stmt_bind_param($stmt, "iss", $product['id'], $imageDir, $text);
+            mysqli_stmt_execute($stmt);
+            mysqli_stmt_close($stmt);
           }
-          else { header("location: /bookworm/pages/add_item?error=FILE_TOO_BIG"); exit(); }
         }
-        else { header("location: /bookworm/pages/add_item?error=UPLOAD_ERROR"); exit(); }
+        else { header("location: /bookworm/pages/add_item?error=FILE_TOO_BIG"); exit(); }
       }
-      else { header("location: /bookworm/pages/add_item?error=FILETYPE_NOT_ALLOWED"); exit(); }
+      else { header("location: /bookworm/pages/add_item?error=UPLOAD_ERROR"); exit(); }
+    }
+    else { header("location: /bookworm/pages/add_item?error=FILETYPE_NOT_ALLOWED"); exit(); }
+  }
+
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  // Add Description: Adds a description to a book identified by ISBN
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  function addDescription($conn, $ISBN, $description, $file) {
+    // Create description file
+    $textFileName = uniqid() . ".txt";
+    $textFile = fopen($textFileName, "a+");
+    file_put_contents($textFileName, $description);
+    fclose($textFile);
+
+    // Move file to /bookworm/resources/prod/des/
+    $fileDestination = '../resources/prod/des/' . $textFileName;
+    rename($textFileName, $fileDestination);
+
+    // Receive correct product ID
+    $result = $conn->query("SELECT id FROM product WHERE ISBN=$ISBN;");
+    if ($product = $result->fetch_assoc()) {
+      $pid = $product["id"];
     }
 
-    header("location: /bookworm/pages/add_item?error=none");
-    exit();
+    $descriptionDir = "/bookworm/resources/prod/des/" . $textFileName;
 
+    // See if an image already exists. If not we have to make a new entry in the table product_add
+    if ($file != null) {
+      $sql = "UPDATE product_add SET des_dir=? WHERE pid=?";
+      $stmt = mysqli_stmt_init($conn);
+
+      if (!mysqli_stmt_prepare($stmt, $sql)){
+        header("location: ../pages/add_item?error=STMT_FAILED");
+        exit();
+      }
+
+      mysqli_stmt_bind_param($stmt, "si", $descriptionDir, $pid);
+      mysqli_stmt_execute($stmt);
+      mysqli_stmt_close($stmt);
+    }
+    else {
+      $sql = "INSERT INTO product_add VALUES (?, ?, ?);";
+      $stmt = mysqli_stmt_init($conn);
+
+      if (!mysqli_stmt_prepare($stmt, $sql)) {
+        header("location: /bookworm/pages/add_item?error=STMT_FAILED");
+        exit();
+      }
+
+      $imageDir = "/bookworm/resources/prod/img/img_missing.jpg";
+
+      mysqli_stmt_bind_param($stmt, "iss", $product['id'], $imageDir, $descriptionDir);
+      mysqli_stmt_execute($stmt);
+      mysqli_stmt_close($stmt);
+    }
   }
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

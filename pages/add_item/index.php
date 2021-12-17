@@ -40,6 +40,8 @@
           <input type="number" name="stock" placeholder="Stock..." min="0"><br><br>
           <label class="imageUpload" for="file">Upload image</label><br>
           <input type="file" id="file" name="file"><br>
+          <label class="descriptionText" for "description"></label><br>
+          <textarea id="description" name="description" rows="6" cols="40" placeholder="Description..."></textarea><br>
           <button type="inputSubmit" name="submit">Add Item</button>
         </form>
         <p class="errorMessage"><?php
