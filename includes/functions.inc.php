@@ -228,7 +228,7 @@
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // Add Description: Adds a description to a book identified by ISBN
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  function addDescription($conn, $ISBN, $description, $file) {
+  function addDescription($conn, $ISBN, $description, $fileName) {
     // Create description file
     $textFileName = uniqid() . ".txt";
     $textFile = fopen($textFileName, "a+");
@@ -248,7 +248,7 @@
     $descriptionDir = "/bookworm/resources/prod/des/" . $textFileName;
 
     // See if an image already exists. If not we have to make a new entry in the table product_add
-    if ($file != null) {
+    if ($fileName != "") {
       $sql = "UPDATE product_add SET des_dir=? WHERE pid=?";
       $stmt = mysqli_stmt_init($conn);
 
@@ -282,7 +282,7 @@
   // Create User: Creates a user from param.
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   function createUser($conn, $fname, $lname, $email, $pwd) {
-    $sql = "INSERT INTO user (fname, lname, email, pwd_sha256, pwd_salt) VALUES (?, ?, ?, ?, ?);";
+    $sql = "INSERT INTO user (fname, lname, email, pwd_sha256, pwd_salt, admin) VALUES (?, ?, ?, ?, ?, 0);";
     $stmt = mysqli_stmt_init($conn);
 
     if (!mysqli_stmt_prepare($stmt, $sql)) {
