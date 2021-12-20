@@ -552,6 +552,34 @@
   }
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  // Delete Account: Deletes account from database if correct pwd is provided
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  function deleteAccount($conn, $uid, $pwd) {
+    $result = $conn->query("SELECT * FROM order_parent WHERE uid=$uid;");
+    $userArr = fetch_user($conn, $uid, null);
+
+    // Wrong password
+    if (!checkPassword($pwd, $userArr['pwd_salt'], $userArr['pwd_sha256'])) {
+      header("location: /bookworm/pages/delete_account?error=WRONG_PASSWORD");
+      exit();
+    }
+    // Order(s) exist
+    elseif ($result->fetch_assoc()) {
+      header("location: /bookworm/pages/delete_account?error=ORDER_EXISTS");
+      exit();
+    }
+    else {
+      // Empty accounts cart
+      $sql = "DELETE FROM cart_item WHERE uid=$uid;";
+      $conn->query($sql);
+
+      // Delete user
+      $sql = "DELETE FROM user WHERE id=$uid;";
+      $conn->query($sql);
+    }
+  }
+
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // Place Order: Place an order on one or multiple items
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   function placeOrder($conn, $fname, $lname, $address, $zipcode, $city, $country, $email, $uid) {

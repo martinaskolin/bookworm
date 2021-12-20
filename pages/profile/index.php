@@ -37,8 +37,11 @@
           <input type="inputText" name="newEmail" placeholder="Edit email..."><br>
           <input type="password" name="newPwd" placeholder="New password..."><br>
           <input type="password" name="oldPwd" placeholder="Old password (required)..."><br>
-          <button type="inputSubmit" name="submit">Save</button>
+          <button type="inputSubmit" name="submit">Save</button><br>
         </form>
+
+        <a href='/bookworm/pages/delete_account/'><button type='submit' name='submit'>Delete Account</button></a>
+
         <p class="errorMessage"><?php
         if (isset($_GET["error"])) {
           $error = $_GET["error"];
