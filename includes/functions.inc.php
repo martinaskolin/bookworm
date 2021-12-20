@@ -197,9 +197,12 @@
     if (in_array($fileActualExt, $allowed)) {
       if ($fileError === 0) {
         if ($fileSize < 1000000) {
-          $fileNameNew = uniqid('', true) . "." . $fileActualExt;
-          $fileDestination = '../resources/prod/img/' . $fileName;
+          $fileNameNew = uniqid() . "." . $fileActualExt;
+          $fileDestination = '../resources/prod/img/' . $fileNameNew;
           move_uploaded_file($fileTmpName, $fileDestination);
+
+          //header("location: /bookworm/pages/add_item?error=" . $fileNameNew);
+          //exit();
 
           // Place file in database
           $result = $conn->query("SELECT id FROM product WHERE ISBN=$ISBN;");
@@ -212,7 +215,7 @@
               exit();
             }
 
-            $imageDir = "/bookworm/resources/prod/img/" . $fileName;
+            $imageDir = "/bookworm/resources/prod/img/" . $fileNameNew;
 
             $text = "No description.";
 
@@ -382,11 +385,12 @@
       // Image
       if ($fileName != "") {
         if (!isset($product['img_dir'])) {
-          addImageFromEdit($conn, $ISBN, $file, $fileName, $fileTmpName, $fileSize, $fileError, $pid);
+          addImageFromEdit($conn, $file, $fileName, $fileTmpName, $fileSize, $fileError, $pid);
         }
         else {
           $oldImage = substr($product['img_dir'], 29);
-          editProductImage($conn, $file, $fileName, $fileTmpName, $fileSize, $fileError, $pid, $oldImage);
+          $oldDescription = $product['des_dir'];
+          editProductImage($conn, $file, $fileName, $fileTmpName, $fileSize, $fileError, $pid, $oldImage, $oldDescription);
         }
       }
 
@@ -444,7 +448,7 @@
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // Add Image From Edit: Adds an image to a book identified by ISBN from the edit page
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  function addImageFromEdit($conn, $ISBN, $file, $fileName, $fileTmpName, $fileSize, $fileError, $pid) {
+  function addImageFromEdit($conn, $file, $fileName, $fileTmpName, $fileSize, $fileError, $pid) {
     $fileExt = explode('.', $fileName);
     $fileActualExt = strtolower(end($fileExt));
 
@@ -453,29 +457,26 @@
     if (in_array($fileActualExt, $allowed)) {
       if ($fileError === 0) {
         if ($fileSize < 1000000) {
-          $fileNameNew = uniqid('', true) . "." . $fileActualExt;
-          $fileDestination = '../resources/prod/img/' . $fileName;
+          $fileNameNew = uniqid() . "." . $fileActualExt;
+          $fileDestination = '../resources/prod/img/' . $fileNameNew;
           move_uploaded_file($fileTmpName, $fileDestination);
 
           // Place file in database
-          $result = $conn->query("SELECT id FROM product WHERE ISBN=$ISBN;");
-          if ($product = $result->fetch_assoc()) {
-            $sql = "INSERT INTO product_add VALUES (?, ?, ?);";
-            $stmt = mysqli_stmt_init($conn);
+          $sql = "INSERT INTO product_add VALUES (?, ?, ?);";
+          $stmt = mysqli_stmt_init($conn);
 
-            if (!mysqli_stmt_prepare($stmt, $sql)) {
-              header("location: /bookworm/pages/edit_item/index.php?id=" . $pid . "&error=STMT_FAILED");
-              exit();
-            }
-
-            $imageDir = "/bookworm/resources/prod/img/" . $fileName;
-
-            $text = "No description.";
-
-            mysqli_stmt_bind_param($stmt, "iss", $product['id'], $imageDir, $text);
-            mysqli_stmt_execute($stmt);
-            mysqli_stmt_close($stmt);
+          if (!mysqli_stmt_prepare($stmt, $sql)) {
+            header("location: /bookworm/pages/edit_item/index.php?id=" . $pid . "&error=STMT_FAILED");
+            exit();
           }
+
+          $imageDir = "/bookworm/resources/prod/img/" . $fileNameNew;
+
+          $text = "No description.";
+
+          mysqli_stmt_bind_param($stmt, "iss", $product['id'], $imageDir, $text);
+          mysqli_stmt_execute($stmt);
+          mysqli_stmt_close($stmt);
         }
         else { header("location: /bookworm/pages/edit_item/index.php?id=" . $pid . "&error=FILE_TOO_BIG"); }
       }
@@ -487,7 +488,7 @@
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // Edit Product Image: Edit an existing product image.
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  function editProductImage($conn, $file, $fileName, $fileTmpName, $fileSize, $fileError, $pid, $oldImage) {
+  function editProductImage($conn, $file, $fileName, $fileTmpName, $fileSize, $fileError, $pid, $oldImage, $oldDescription) {
     $fileExt = explode('.', $fileName);
     $fileActualExt = strtolower(end($fileExt));
 
@@ -496,8 +497,8 @@
     if (in_array($fileActualExt, $allowed)) {
       if ($fileError === 0) {
         if ($fileSize < 1000000) {
-          $fileNameNew = uniqid('', true) . "." . $fileActualExt;
-          $fileDestination = '../resources/prod/img/' . $fileName;
+          $fileNameNew = uniqid() . "." . $fileActualExt;
+          $fileDestination = '../resources/prod/img/' . $fileNameNew;
           move_uploaded_file($fileTmpName, $fileDestination);
 
           // Place file in database
@@ -509,11 +510,9 @@
             exit();
           }
 
-          $imageDir = "/bookworm/resources/prod/img/" . $fileName;
+          $imageDir = "/bookworm/resources/prod/img/" . $fileNameNew;
 
-          $text = "No description.";
-
-          mysqli_stmt_bind_param($stmt, "ssi", $imageDir, $text, $pid);
+          mysqli_stmt_bind_param($stmt, "ssi", $imageDir, $oldDescription, $pid);
           mysqli_stmt_execute($stmt);
           mysqli_stmt_close($stmt);
         }
