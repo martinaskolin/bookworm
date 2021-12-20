@@ -1,8 +1,10 @@
 <?php
 
+  $id = htmlspecialchars($_GET['id']);
+
   // If submit is not set inside the code send them back (someone tryed to access the page through the url)
   if (!isset($_POST["submit"])) {
-    header("location: ../pages/add_item");
+    header("location: /bookworm/pages/edit_item/index.php?id= " . $id . "");
     exit();
   }
 
@@ -23,24 +25,18 @@
   // Description
   $description = $_POST["description"];
 
-  // used PHP scripts
+  // Used PHP scripts
   require_once "dbh.inc.php";
   require_once "functions.inc.php";
 
   // Error checks
-  if (checkEmpty(array($book, $author, $ISBN, $price, $stock)) !== false) { header("location: /bookworm/pages/add_item?error=EMPTY_INPUT"); exit(); }
-  if (checkForExistingISBN($conn, $ISBN)) { header("location: ../pages/add_item?error=BOOK_ALREADY_EXISTS"); exit(); }
-
-  createNewItem($conn, $book, $author, $ISBN, $price, $stock);
-
-  if ($fileName != "") {
-    addImage($conn, $ISBN, $file, $fileName, $fileTmpName, $fileSize, $fileError);
-  }
-  if (!empty($description)) {
-    addDescription($conn, $ISBN, $description, $fileName);
+  if ($ISBN != "") {
+    if (checkForExistingISBN($conn, $ISBN)) { header("location: /bookworm/pages/edit_item/index.php?id=" . $id . "&error=BOOK_ALREADY_EXISTS"); exit(); }
   }
 
-  header("location: /bookworm/pages/add_item?error=none");
+  editProduct($conn, $book, $author, $ISBN, $price, $stock, $file, $fileName, $fileTmpName, $fileSize, $fileError, $description, $id);
+
+  header("location: /bookworm/pages/edit_item/index.php?id=" . $id . "");
   exit();
 
 ?>

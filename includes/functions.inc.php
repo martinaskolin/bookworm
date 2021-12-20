@@ -72,6 +72,9 @@
     return $result;
   }
 
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  // Fetch Reviews: Returns all reviews for a product
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   function fetch_reviews($conn, $pid) {
     $sql = "SELECT * FROM review WHERE review.pid = ". $pid .";";
     $result = $conn->query($sql);
@@ -348,6 +351,180 @@
 
     header("location: ../pages/profile?error=none");
     exit();
+  }
+
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  // Edit Product: Edit a product from admin page.
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  function editProduct($conn, $book, $author, $ISBN, $price, $stock, $file, $fileName, $fileTmpName, $fileSize, $fileError, $description, $pid) {
+    $result = fetch_products($conn, $pid);
+
+    if ($product = $result->fetch_assoc()) {
+      // Base information
+      if ($book == null) { $book = $product['name']; }
+      if ($author == null) { $author = $product['author']; }
+      if ($ISBN == null) { $ISBN = $product['ISBN']; }
+      if ($price == null) { $price = $product['price']; }
+      if ($stock == null) { $stock = $product['stock']; }
+
+      $sql = "UPDATE product SET name=?, author=?, ISBN=?, price=?, stock=? WHERE id=?;";
+      $stmt = mysqli_stmt_init($conn);
+
+      if (!mysqli_stmt_prepare($stmt, $sql)){
+        header("location: /bookworm/pages/edit_item/index.php?id=" . $pid . "&error=STMT_FAILED");
+        exit();
+      }
+
+      mysqli_stmt_bind_param($stmt, "sssiii", $book, $author, $ISBN, $price, $stock, $pid);
+      mysqli_stmt_execute($stmt);
+      mysqli_stmt_close($stmt);
+
+      // Image
+      if ($fileName != "") {
+        if (!isset($product['img_dir'])) {
+          addImageFromEdit($conn, $ISBN, $file, $fileName, $fileTmpName, $fileSize, $fileError, $pid);
+        }
+        else {
+          $oldImage = substr($product['img_dir'], 29);
+          editProductImage($conn, $file, $fileName, $fileTmpName, $fileSize, $fileError, $pid, $oldImage);
+        }
+      }
+
+      // Description
+      if (!empty($description)) {
+        // Create description file
+        $textFileName = uniqid() . ".txt";
+        $textFile = fopen($textFileName, "a+");
+        file_put_contents($textFileName, $description);
+        fclose($textFile);
+
+        // Move file to /bookworm/resources/prod/des/
+        $fileDestination = '../resources/prod/des/' . $textFileName;
+        rename($textFileName, $fileDestination);
+
+        $descriptionDir = "/bookworm/resources/prod/des/" . $textFileName;
+
+        // Create new entry in table if no entry for the product exists
+        if (!isset($product['des_dir'])) {
+          $sql = "INSERT INTO product_add VALUES (?, ?, ?);";
+          $stmt = mysqli_stmt_init($conn);
+
+          if (!mysqli_stmt_prepare($stmt, $sql)) {
+            header("location: /bookworm/pages/edit_item?id=" . $pid . "&error=STMT_FAILED");
+            exit();
+          }
+
+          $imageDir = "/bookworm/resources/prod/img/img_missing.jpg";
+
+          mysqli_stmt_bind_param($stmt, "iss", $pid, $imageDir, $descriptionDir);
+          mysqli_stmt_execute($stmt);
+          mysqli_stmt_close($stmt);
+        }
+        // Update entry if it already exists
+        else {
+          $sql = "UPDATE product_add SET des_dir=? WHERE pid=?";
+          $stmt = mysqli_stmt_init($conn);
+
+          if (!mysqli_stmt_prepare($stmt, $sql)){
+            header("location: ../pages/edit_item?id=" . $pid . "&error=STMT_FAILED");
+            exit();
+          }
+
+          mysqli_stmt_bind_param($stmt, "si", $descriptionDir, $pid);
+          mysqli_stmt_execute($stmt);
+          mysqli_stmt_close($stmt);
+
+          $oldDescription = substr($product['des_dir'], 29);
+          unlink("../resources/prod/des/" . $oldDescription);
+        }
+      }
+    }
+  }
+
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  // Add Image From Edit: Adds an image to a book identified by ISBN from the edit page
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  function addImageFromEdit($conn, $ISBN, $file, $fileName, $fileTmpName, $fileSize, $fileError, $pid) {
+    $fileExt = explode('.', $fileName);
+    $fileActualExt = strtolower(end($fileExt));
+
+    $allowed = array('jpg', 'jpeg', 'png');
+
+    if (in_array($fileActualExt, $allowed)) {
+      if ($fileError === 0) {
+        if ($fileSize < 1000000) {
+          $fileNameNew = uniqid('', true) . "." . $fileActualExt;
+          $fileDestination = '../resources/prod/img/' . $fileName;
+          move_uploaded_file($fileTmpName, $fileDestination);
+
+          // Place file in database
+          $result = $conn->query("SELECT id FROM product WHERE ISBN=$ISBN;");
+          if ($product = $result->fetch_assoc()) {
+            $sql = "INSERT INTO product_add VALUES (?, ?, ?);";
+            $stmt = mysqli_stmt_init($conn);
+
+            if (!mysqli_stmt_prepare($stmt, $sql)) {
+              header("location: /bookworm/pages/edit_item/index.php?id=" . $pid . "&error=STMT_FAILED");
+              exit();
+            }
+
+            $imageDir = "/bookworm/resources/prod/img/" . $fileName;
+
+            $text = "No description.";
+
+            mysqli_stmt_bind_param($stmt, "iss", $product['id'], $imageDir, $text);
+            mysqli_stmt_execute($stmt);
+            mysqli_stmt_close($stmt);
+          }
+        }
+        else { header("location: /bookworm/pages/edit_item/index.php?id=" . $pid . "&error=FILE_TOO_BIG"); }
+      }
+      else { header("location: /bookworm/pages/edit_item/index.php?id=" . $pid . "&error=UPLOAD_ERROR"); }
+    }
+    else { header("location: /bookworm/pages/edit_item/index.php?id=" . $pid . "&error=FILETYPE_NOT_ALLOWED"); }
+  }
+
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  // Edit Product Image: Edit an existing product image.
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  function editProductImage($conn, $file, $fileName, $fileTmpName, $fileSize, $fileError, $pid, $oldImage) {
+    $fileExt = explode('.', $fileName);
+    $fileActualExt = strtolower(end($fileExt));
+
+    $allowed = array('jpg', 'jpeg', 'png');
+
+    if (in_array($fileActualExt, $allowed)) {
+      if ($fileError === 0) {
+        if ($fileSize < 1000000) {
+          $fileNameNew = uniqid('', true) . "." . $fileActualExt;
+          $fileDestination = '../resources/prod/img/' . $fileName;
+          move_uploaded_file($fileTmpName, $fileDestination);
+
+          // Place file in database
+          $sql = "UPDATE product_add SET img_dir=?, des_dir=? WHERE pid=?;";
+          $stmt = mysqli_stmt_init($conn);
+
+          if (!mysqli_stmt_prepare($stmt, $sql)) {
+            header("location: /bookworm/pages/edit_item?id=" . $pid . "&error=STMT_FAILED");
+            exit();
+          }
+
+          $imageDir = "/bookworm/resources/prod/img/" . $fileName;
+
+          $text = "No description.";
+
+          mysqli_stmt_bind_param($stmt, "ssi", $imageDir, $text, $pid);
+          mysqli_stmt_execute($stmt);
+          mysqli_stmt_close($stmt);
+        }
+        else { header("location: /bookworm/pages/edit_item/index.php?id=" . $pid . "&error=FILE_TOO_BIG"); }
+      }
+      else { header("location: /bookworm/pages/edit_item/index.php?id=" . $pid . "&error=UPLOAD_ERROR"); }
+    }
+    else { header("location: /bookworm/pages/edit_item/index.php?id=" . $pid . "&error=FILETYPE_NOT_ALLOWED"); }
+
+    // Remove the old image from the directory
+    unlink("../resources/prod/img/" . $oldImage);
   }
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
