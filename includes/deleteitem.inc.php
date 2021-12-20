@@ -8,16 +8,32 @@
     exit();
   }
 
+  // Used PHP scripts
+  require_once "dbh.inc.php";
+  require_once "functions.inc.php";
+
   // Fetch product and product_add
+  $result = fetch_products($conn, $id);
 
-  // Delete product_add
+  if ($product = $result->fetch_assoc()) {
+    // Delete product_add
+    $sql = "DELETE FROM product_add WHERE pid=$id;";
+    $conn->query($sql);
 
-  // Delete product
+    // Delete product
+    $sql = "DELETE FROM product WHERE id=$id;";
+    $conn->query($sql);
 
-  // Unlink img_dir
+    // Unlink img_dir
+    $image = substr($product['img_dir'], 29);
+    unlink("../resources/prod/img/" . $image);
 
-  // Unlink des_dir
+    // Unlink des_dir
+    $description = substr($product['des_dir'], 29);
+    unlink("../resources/prod/des/" . $description);
+  }
 
-  // Go back to browse
+  header("location: /bookworm/index.php?status=ITEM_DELETED");
+  exit();
 
 ?>
