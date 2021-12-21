@@ -10,4 +10,4 @@ The website provides the following structure:
 - A cart page where items can be removed from the cart and where the customer can go to checkout
 - A checkout page were an order can be placed on the items in the cart
 
-Link to website: http://130.240.200.15/bookworm/
+Link to website: http://130.240.200.15/bookworm/ (Not the latest version! Will be updated soon!)
