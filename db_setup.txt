@@ -11,68 +11,70 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,N
 -- -----------------------------------------------------
 -- Schema bookworm
 -- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `bookworm` DEFAULT CHARACTER SET utf8 ;
+CREATE SCHEMA IF NOT EXISTS `bookworm` DEFAULT CHARACTER SET utf8mb4 ;
 USE `bookworm` ;
-
--- -----------------------------------------------------
--- Table `bookworm`.`user`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `bookworm`.`user` (
-  `id` INT NOT NULL AUTO_INCREMENT,
-  `fname` VARCHAR(45) NOT NULL,
-  `lname` VARCHAR(45) NOT NULL,
-  `email` VARCHAR(320) NOT NULL,
-  `pwd_sha256` BINARY(64) NOT NULL,
-  `pwd_salt` BINARY(32) NOT NULL,
-  `admin` TINYINT NOT NULL,
-  PRIMARY KEY (`id`))
-ENGINE = InnoDB;
-
 
 -- -----------------------------------------------------
 -- Table `bookworm`.`product`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `bookworm`.`product` (
-  `id` INT NOT NULL AUTO_INCREMENT,
-  `price` INT NOT NULL,
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `price` INT(11) NOT NULL,
   `name` VARCHAR(64) NOT NULL,
   `author` VARCHAR(64) NOT NULL,
   `ISBN` VARCHAR(13) NOT NULL,
-  `stock` INT NOT NULL,
+  `stock` INT(11) NOT NULL,
   PRIMARY KEY (`id`))
-ENGINE = InnoDB;
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4;
 
 
 -- -----------------------------------------------------
--- Table `bookworm`.`product_add`
+-- Table `bookworm`.`user`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `bookworm`.`product_add` (
-  `pid` INT NOT NULL,
-  `img_dir` VARCHAR(64) NOT NULL,
-  `des_dir` VARCHAR(64) NOT NULL,
-  PRIMARY KEY (`pid`))
-ENGINE = InnoDB;
+CREATE TABLE IF NOT EXISTS `bookworm`.`user` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `fname` VARCHAR(45) NOT NULL,
+  `lname` VARCHAR(45) NOT NULL,
+  `email` VARCHAR(320) NOT NULL,
+  `pwd_sha256` BINARY(64) NOT NULL,
+  `pwd_salt` BINARY(32) NOT NULL,
+  `admin` TINYINT(4) NOT NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4;
 
 
 -- -----------------------------------------------------
 -- Table `bookworm`.`cart_item`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `bookworm`.`cart_item` (
-  `id` INT NOT NULL AUTO_INCREMENT,
-  `pid` INT NOT NULL,
-  `uid` INT NOT NULL,
-  PRIMARY KEY (`id`))
-ENGINE = InnoDB;
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `pid` INT(11) NOT NULL,
+  `uid` INT(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `fk_cart_item_product1`
+    FOREIGN KEY (`pid`)
+    REFERENCES `bookworm`.`product` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_cart_item_user1`
+    FOREIGN KEY (`uid`)
+    REFERENCES `bookworm`.`user` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4;
 
 
 -- -----------------------------------------------------
 -- Table `bookworm`.`order_parent`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `bookworm`.`order_parent` (
-  `id` INT NOT NULL AUTO_INCREMENT,
-  `uid` INT NOT NULL,
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `uid` INT(11) NOT NULL,
   `status` VARCHAR(10) NOT NULL,
-  `date` TIMESTAMP NOT NULL,
+  `date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
   `email` VARCHAR(320) NOT NULL,
   `fname` VARCHAR(45) NOT NULL,
   `lname` VARCHAR(45) NOT NULL,
@@ -80,33 +82,72 @@ CREATE TABLE IF NOT EXISTS `bookworm`.`order_parent` (
   `zip_code` VARCHAR(5) NOT NULL,
   `city` VARCHAR(45) NOT NULL,
   `country` VARCHAR(45) NOT NULL,
-  PRIMARY KEY (`id`))
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `bookworm`.`review`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `bookworm`.`review` (
-  `id` INT NOT NULL AUTO_INCREMENT,
-  `pid` INT NOT NULL,
-  `uid` INT NOT NULL,
-  `rating` INT(3) NOT NULL,
-  `des_dir` VARCHAR(64) NULL,
-  PRIMARY KEY (`id`))
-ENGINE = InnoDB;
+  PRIMARY KEY (`id`),
+  CONSTRAINT `fk_order_parent_user1`
+    FOREIGN KEY (`uid`)
+    REFERENCES `bookworm`.`user` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4;
 
 
 -- -----------------------------------------------------
 -- Table `bookworm`.`order_item`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `bookworm`.`order_item` (
-  `id` INT NOT NULL AUTO_INCREMENT,
-  `oid` INT NOT NULL,
-  `price` INT NOT NULL,
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `oid` INT(11) NOT NULL,
+  `price` INT(11) NOT NULL,
   `ISBN` VARCHAR(13) NOT NULL,
-  PRIMARY KEY (`id`))
-ENGINE = InnoDB;
+  PRIMARY KEY (`id`),
+  CONSTRAINT `fk_order_item_order_parent1`
+    FOREIGN KEY (`oid`)
+    REFERENCES `bookworm`.`order_parent` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4;
+
+
+-- -----------------------------------------------------
+-- Table `bookworm`.`product_add`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `bookworm`.`product_add` (
+  `pid` INT(11) NOT NULL,
+  `img_dir` VARCHAR(64) NULL,
+  `des_dir` VARCHAR(64) NULL,
+  PRIMARY KEY (`pid`),
+  CONSTRAINT `fk_product_add_product`
+    FOREIGN KEY (`pid`)
+    REFERENCES `bookworm`.`product` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4;
+
+
+-- -----------------------------------------------------
+-- Table `bookworm`.`review`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `bookworm`.`review` (
+  `pid` INT(11) NOT NULL,
+  `uid` INT(11) NOT NULL,
+  `rating` INT(3) NOT NULL,
+  `des_dir` VARCHAR(64) NULL DEFAULT NULL,
+  PRIMARY KEY (`pid`, `uid`),
+  CONSTRAINT `fk_review_product1`
+    FOREIGN KEY (`pid`)
+    REFERENCES `bookworm`.`product` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_review_user1`
+    FOREIGN KEY (`uid`)
+    REFERENCES `bookworm`.`user` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4;
 
 
 SET SQL_MODE=@OLD_SQL_MODE;
