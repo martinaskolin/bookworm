@@ -68,5 +68,13 @@ ul .author {
 
   width: 100%;
 }
+
 .review {
+  background-color: #423F3E;
+  padding: 10px;
+}
+
+.review h3 {
+  margin: 0px;
+  margin-bottom: 5px;
 }

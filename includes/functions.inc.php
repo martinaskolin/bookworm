@@ -76,7 +76,7 @@
   // Fetch Reviews: Returns all reviews for a product
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   function fetch_reviews($conn, $pid) {
-    $sql = "SELECT * FROM review WHERE review.pid = ". $pid .";";
+    $sql = "SELECT * FROM review LEFT JOIN user ON review.uid = user.id WHERE review.pid = ". $pid .";";
     $result = $conn->query($sql);
 
     return $result;
