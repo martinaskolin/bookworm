@@ -3,11 +3,14 @@ This project is a part of the database course D0018E at Luleå University of Tec
 
 The website provides the following structure:
 - A page for browsing books in stock and placing books in the cart
-  - When clicking on a book additional information such as reviews are displayed
+  - When clicking on a book additional information and reviews are displayed
+  - An admin profile can add, delete and edit books from the home page when clicking on a book
 - A signup page were a user can create an account with name, email and encrypted password
 - A login page were a user can login if they have created an account
-- A profile page were a logged in user can edit their account information
+- A profile page were a logged in user can edit and delete their account information
 - A cart page where items can be removed from the cart and where the customer can go to checkout
 - A checkout page were an order can be placed on the items in the cart
 
-Link to website: http://130.240.200.15/bookworm/ (Not the latest version! Will be updated soon!)
+The website and database are running on a LUDD DUST server at LTU.
+
+Link to website: http://130.240.200.15/bookworm/
