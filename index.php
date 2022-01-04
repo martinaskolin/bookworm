@@ -29,6 +29,12 @@
       if ($result->num_rows > 0) {
         while ($product = $result->fetch_assoc()) {
 
+          if (!$is_admin) {
+            if ($product['stock'] == 0) {
+              continue;
+            }
+          }  
+
           // Product dependent Variables
           $add_exist = ($product['img_dir'] != null); // Additional information exist for the product
 
