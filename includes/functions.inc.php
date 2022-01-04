@@ -569,6 +569,16 @@
       exit();
     }
     else {
+      // Remove reviews
+      $result = $conn->query("SELECT des_dir FROM review WHERE uid=$uid;");
+      if ($reviewDir = $result->fetch_assoc()) {
+        $review = substr($reviewDir['des_dir'], 29);
+        unlink("../resources/prod/rev/" . $review);
+      }
+
+      $sql = "DELETE FROM review WHERE uid=$uid;";
+      $conn->query($sql);
+
       // Empty accounts cart
       $sql = "DELETE FROM cart_item WHERE uid=$uid;";
       $conn->query($sql);
