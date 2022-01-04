@@ -594,10 +594,10 @@
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   function placeOrder($conn, $fname, $lname, $address, $zipcode, $city, $country, $email, $uid) {
     /* Tell mysqli to throw an exception if an error occurs */
-    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+    //mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
     $conn->begin_transaction();
 
-    try {
+    //try {
       // Add order parent
       $sql = "INSERT INTO order_parent (fname, lname, address, zip_code, city, country, email, status, uid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
       $stmt = mysqli_stmt_init($conn);
@@ -619,7 +619,10 @@
           $cartArrUpdated = fetch_cart($conn, $uid); // Cart must be fetched every time an item is added, to check the stock
           $itemUpdated = $cartArrUpdated->fetch_assoc();
           if ($itemUpdated["stock"] == 0) {
-            throw new Exception("Empty stock.");
+            //throw new Exception("Empty stock.");
+            $conn->rollback();
+            header("location: /bookworm/pages/checkout?error=ORDER_NOT_PLACED");
+            exit();
           }
           $id = $item["id"];
           $price = $item["price"];
@@ -633,8 +636,8 @@
         header("location: /bookworm/pages/checkout_done?status=ORDER_PLACED");
         exit();
       }
-    }
-    catch (mysqli_sql_exception $exception) {
+    //}
+    /*catch (mysqli_sql_exception $exception) {
       $conn->rollback();
       throw $exception;
     }
@@ -642,7 +645,7 @@
       $conn->rollback();
       header("location: /bookworm/pages/checkout?error=ORDER_NOT_PLACED");
       exit();
-    }
+    }*/
   }
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
