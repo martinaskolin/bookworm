@@ -90,26 +90,6 @@
             echo "<a>" . $product['price'] ." <i class='bi-bag-fill'></i> </a>";
           echo "</div>";
 
-          // Reviews
-          echo "<div class='review-container'>";
-            $result = fetch_reviews($conn, $product['id']);
-
-            while ($review = $result->fetch_assoc()) {
-              echo "<div class='review'>";
-                // Rating
-                echo "<h3>Rating: ". $review['rating'] ."</h3>";
-                // Description
-                if ($review['des_dir'] != null && file_exists($_SERVER['DOCUMENT_ROOT'] . $review['des_dir'])) {
-                  $description = file_get_contents($_SERVER['DOCUMENT_ROOT'] . $review['des_dir']);
-                  echo $description;
-                }
-              echo "</div>";
-            }
-          echo "</div>";
-
-
-        echo "</div>";
-
         echo "</div>";
       }
 
