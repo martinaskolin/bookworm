@@ -56,7 +56,7 @@
             $result = fetch_reviews($conn, $product['id']);
 
             // Check if user already left review
-            if (isset($_SESSION['uid']) && !$conn->query("SELECT * FROM review WHERE review.uid = ". $_SESSION['uid'] .";")->fetch_assoc()) {
+            if (isset($_SESSION['uid']) && !$conn->query("SELECT * FROM review WHERE review.uid = ". $_SESSION['uid'] ." AND review.pid = " . $product['id'] . ";")->fetch_assoc()) {
               echo "<form action='/bookworm/includes/review.inc.php' method='post'>";
 
               echo "<select name='rating'>";
