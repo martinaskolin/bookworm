@@ -16,7 +16,7 @@
    <body>
 
      <div class="header">
-       Bookworm
+       <a href='/bookworm/' style='text-decoration: none; color: white'>Bookworm</a>
        <?php
 
        // Variables
