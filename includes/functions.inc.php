@@ -276,7 +276,7 @@
         exit();
       }
 
-      $imageDir = "/bookworm/resources/prod/img/img_missing.jpg";
+      $imageDir = "";
 
       mysqli_stmt_bind_param($stmt, "iss", $product['id'], $imageDir, $descriptionDir);
       mysqli_stmt_execute($stmt);
@@ -418,7 +418,7 @@
             exit();
           }
 
-          $imageDir = "/bookworm/resources/prod/img/img_missing.jpg";
+          $imageDir = "";
 
           mysqli_stmt_bind_param($stmt, "iss", $pid, $imageDir, $descriptionDir);
           mysqli_stmt_execute($stmt);
