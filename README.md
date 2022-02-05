@@ -13,4 +13,4 @@ The website provides the following structure:
 
 The website and database are running on a LUDD DUST server at LTU.
 
-Link to website: http://130.240.200.15/bookworm/
+Link to website: http://130.240.200.15/bookworm/ **(Currently down)**
